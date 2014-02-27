@@ -8,7 +8,7 @@
 #ifndef RESOURCE_H_
 #define RESOURCE_H_
 
-#include "Frame.h"
+#include "Graphics/Frame.h"
 
 namespace std {
 

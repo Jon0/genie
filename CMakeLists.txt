@@ -13,6 +13,7 @@ include_directories( ${OPENGL_INCLUDE_DIRS} ${GLUT_INCLUDE_DIRS} ${ZLIB_INCLUDE_
 file(GLOB SRC_FILES
     "src/*.cpp"
     "src/Data/*.cpp"
+    "src/Graphics/*.cpp"
     "src/Model/*.cpp"
     "src/Types/*.cpp"
 )

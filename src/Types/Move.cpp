@@ -37,7 +37,7 @@ void Move::update(Instance *i) {
 	update_simple(i, next->x, next->y);
 
 
-	if ((int)i->x == next->x && (int)i->y == next->y) {
+	if ((int)i->current.ne == next->x && (int)i->current.se == next->y) {
 		if (path->step < path->point.size()-1) {
 			path->step++;
 		}
@@ -56,28 +56,28 @@ void Move::update_simple(Instance *i, float targetx, float targety) {
 	float speed = i->type->speed;
 		int xdir, ydir;
 
-		if (i->x < targetx-speed) {
-			i->x += speed;
+		if (i->current.ne < targetx-speed) {
+			i->current.ne += speed;
 			xdir = 1;
 		}
-		else if (i->x > targetx+speed) {
-			i->x -= speed;
+		else if (i->current.ne > targetx+speed) {
+			i->current.ne -= speed;
 			xdir = -1;
 		}
 		else {
-			i->x = targetx;
+			i->current.ne = targetx;
 			xdir = 0;
 		}
-		if (i->y < targety-speed) {
-			i->y += speed;
+		if (i->current.se < targety-speed) {
+			i->current.se += speed;
 			ydir = 1;
 		}
-		else if (i->y > targety+speed) {
-			i->y -= speed;
+		else if (i->current.se > targety+speed) {
+			i->current.se -= speed;
 			ydir = -1;
 		}
 		else {
-			i->y = targety;
+			i->current.se = targety;
 			ydir = 0;
 		}
 

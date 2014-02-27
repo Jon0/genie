@@ -8,8 +8,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
-#include "def.h"
-#include "Model/Player.h"
+
+#include "../def.h"
+#include "../Model/Player.h"
 #include "Frame.h"
 
 namespace std {
@@ -46,14 +47,8 @@ Frame::Frame(Player *player, unsigned char *data, int index, bool m) {
 		}
 	}	// end height
 
-	glGenTextures(1, &texture);
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, texture);
-	glTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGBA, head->width, head->height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
-
-	// select modulate to mix texture with color for shading
-	glTexEnvf( GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE );
-	glTexParameteri( GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
+	// create an opengl texture
+	createTexture(image_data);
 
 	delete[] image_data;
 }
@@ -122,11 +117,11 @@ int Frame::readCommand(int x, int y, unsigned char *data) {
 		if ((c & 0xf0) == 0) {
 			width = data[1];
 			read_length = 1+width;
-			fill(x, y, width, &data[2], true, true);
+			fill(x, y, width, &data[2], true, false);
 		} else {
 			width = (int) (c & 0xf0) >> 4;
 			read_length = width;
-			fill(x, y, width, &data[1], true, true);
+			fill(x, y, width, &data[1], true, false);
 		}
 		break;
 	case 10:
@@ -167,28 +162,11 @@ void Frame::fill(int x, int y, int length, unsigned char *d, bool p, bool single
 		else addr = &image_data[(height-y-1) * width + x + i];
 
 		if (!owner && p) *addr = 0xffffffff;
-		else if (owner && p && single) *addr = owner->color[d[0]];
-		else if (owner && p) *addr = owner->color[d[i]];
+		else if (owner && p && single) *addr = owner->color[d[0]];  // color_table[d[0] + 32];
+		else if (owner && p) *addr = owner->color[d[i]]; 			// color_table[d[i] + 32];
 		else if (single) *addr = color_table[d[0]];
 		else *addr = color_table[d[i]];	// needs to lookup colour
 	}
-}
-
-void Frame::draw(int x, int y, int z) {
-	glPushMatrix();
-	glTranslatef(x-anchorx, y-height+anchory, -y-z);
-	glBindTexture(GL_TEXTURE_RECTANGLE_NV, texture);
-	glBegin( GL_QUADS );
-	glTexCoord2i( 0, 0 );
-	glVertex3i( 0, 0, 0 );
-	glTexCoord2i( width, 0 );
-	glVertex3i( width, 0, 0 );
-	glTexCoord2i( width, height );
-	glVertex3i( width, height, 0 );
-	glTexCoord2i( 0, height );
-	glVertex3i( 0, height, 0 );
-	glEnd();
-	glPopMatrix();
 }
 
 Frame::~Frame() {

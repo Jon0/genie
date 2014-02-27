@@ -40,10 +40,16 @@ void State::update() {
 
 void State::addObj(Instance *obj) {
 	allObj.push_back(obj);
-	getTile(obj->x, obj->y)->addObj(obj);
+	getTile( obj->getIso() )->addObj(obj);
 }
 
 Tile *State::getTile(int x, int y) {
+	return &tile.data()[y * edge_length + x];
+}
+
+Tile *State::getTile(IsoCoord ic) {
+	int x = ic.ne;
+	int y = ic.se;
 	return &tile.data()[y * edge_length + x];
 }
 

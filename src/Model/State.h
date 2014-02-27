@@ -25,6 +25,7 @@ public:
 	void update();
 	void addObj(Instance *);
 	Tile *getTile(int, int);
+	Tile *getTile(IsoCoord ic);
 	Tile *getTile(Pointi);
 	int getMapSize();
 	virtual ~State();

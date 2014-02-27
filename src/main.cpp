@@ -9,7 +9,7 @@
 #include "def.h"
 #include "Model/State.h"
 #include "Data/Data.h"
-#include "View.h"
+#include "Graphics/View.h"
 
 
 #define SCROLL 15
@@ -51,7 +51,12 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
-	if (state == 1) view->click(x, height - y, button);
+	ScreenCoord sc;
+	sc.x = x;
+	sc.y = height - y;
+
+	// action on button up
+	if (state == 1) view->click(sc, button);
 }
 
 void reshape(int w, int h) {

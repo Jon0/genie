@@ -19,6 +19,7 @@ Type::Type(Player *p, DrsFile *file, int offset) {
 	ability.push_back( new Move( file->getResource(p, offset + 4, true) ) );
 	speed = 0.03;
 	radius = 0.5;
+
 }
 
 Ability *Type::getAbility(Instance *obj) {

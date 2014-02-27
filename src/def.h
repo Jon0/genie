@@ -10,6 +10,14 @@
 
 extern int color_table[256];
 
+struct ScreenCoord {
+	int x, y;
+};
+
+struct IsoCoord {
+	float ne, se;
+};
+
 struct Pointf {
 	float x, y;
 };

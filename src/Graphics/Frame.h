@@ -8,7 +8,7 @@
 #ifndef FRAME_H_
 #define FRAME_H_
 
-#include <GL/gl.h>
+#include "Texture.h"
 
 namespace std {
 
@@ -30,15 +30,12 @@ struct FrameBounds {
 	short int *right;
 };
 
-class Frame {
-	GLuint texture;
+class Frame: public Texture {
 	int *image_data;
 	bool mirror;
 	Player *owner;
 public:
-	int height, width, anchorx, anchory;
 	Frame(Player *, unsigned char *, int, bool);
-	void draw(int, int, int);
 	int readCommand(int, int, unsigned char *);
 	void fill(int, int, int, unsigned char *, bool, bool);
 	virtual ~Frame();

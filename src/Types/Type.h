@@ -11,7 +11,8 @@
 #include <vector>
 #include "../DrsFile.h"
 #include "../Resource.h"
-#include "../Frame.h"
+#include "../Graphics/Frame.h"
+#include "../Graphics/Circle.h"
 #include "Ability.h"
 
 namespace std {
@@ -21,13 +22,17 @@ class Instance;
 class Type {
 	vector<Ability *> ability;	// functions would be better than classes
 public:
+	Circle circle;
 	float radius, speed;
+
 	Type(Player *, DrsFile *, int);
+	virtual ~Type();
+
 	//Instance *newInstance();
 	Ability *getAbility(Instance *obj);
 	Ability *getMove(float x, float y);
 	Frame *getFrame(Resource *, int, int);
-	virtual ~Type();
+
 };
 
 } /* namespace std */
