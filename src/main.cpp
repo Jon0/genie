@@ -25,6 +25,9 @@ int mode, height, width;
 
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
+	case 'q':
+		view->debug();
+		break;
 	case 'p':
 		mode = 1;
 		break;

@@ -26,7 +26,7 @@ public:
 	void connect(int, Tile *);
 	Tile *getAdj(int);
 	int objs();
-	Instance *getObj();
+	Instance *getObj(int);
 	void addObj(Instance *);
 	void removeObj(Instance *i);
 	virtual ~Tile();

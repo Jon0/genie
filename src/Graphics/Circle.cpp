@@ -13,10 +13,10 @@
 namespace std {
 
 Circle::Circle() {
-	width = 200;
-	height = 100;
-	anchorx = 100;
-	anchory = 50;
+	width = 100;
+	height = 50;
+	anchorx = 50;
+	anchory = 25;
 	int *image_data = new int[width*height];
 
 	for (int i = 0; i < width; ++i) {
@@ -25,7 +25,6 @@ Circle::Circle() {
 			int dx = i-anchorx;
 			int dy = j-anchory;
 			float distance = dx*dx/3.0 + dy*dy; // distance from centre
-			cout << distance << endl;
 
 			if (180 < distance && distance < 200) {
 				image_data[i + j * width] = 0xffffffff;

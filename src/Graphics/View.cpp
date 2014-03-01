@@ -38,6 +38,10 @@ View::View(State *s) {
 	delete terrain;
 }
 
+View::~View() {
+	// TODO Auto-generated destructor stub
+}
+
 IsoCoord View::toIso(ScreenCoord sc) {
 	IsoCoord i;
 
@@ -74,7 +78,7 @@ void View::click(ScreenCoord sc, int button) {
 			select = NULL;
 
 			if (clicked_tile->objs() > 0) {
-				select = &clicked_tile->getObj()[0];
+				select = clicked_tile->getObj(0);
 				cout << "select" << endl;
 			}
 		}
@@ -100,8 +104,8 @@ void View::draw() {
 			}
 
 			// draw all objects on the tile
-			for (int i = 0; i < t->objs(); ++t) {
-				Instance *obj = &t->getObj()[i];
+			for (int i = 0; i < t->objs(); ++i) {
+				Instance *obj = t->getObj(i);
 				ScreenCoord sc = toScreen(obj->getIso());
 				obj->draw(sc);
 
@@ -123,8 +127,17 @@ void View::test() {
 
 }
 
-View::~View() {
-	// TODO Auto-generated destructor stub
+void View::debug() {
+
+	for (int se = 0; se < state->getMapSize(); ++se) {
+		cout << ":";
+		for (int ne = 0; ne < state->getMapSize(); ++ne) {
+			Tile *t = state->getTile(ne, se);
+			cout << t->objs() << ", ";
+		}
+		cout << endl;
+	}
+
 }
 
 } /* namespace std */

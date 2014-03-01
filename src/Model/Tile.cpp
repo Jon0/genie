@@ -38,8 +38,9 @@ int Tile::objs() {
 	return obj.size();
 }
 
-Instance *Tile::getObj() {
-	return *obj.data();
+Instance *Tile::getObj(int i) {
+	if (i >= obj.size() ) cout << "dffd" <<endl;
+	return obj.data()[i];
 }
 
 void Tile::addObj(Instance *i) {

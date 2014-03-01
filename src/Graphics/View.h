@@ -34,13 +34,15 @@ class View {
 	Instance *select;
 public:
 	View(State *);
+	virtual ~View();
+
 	IsoCoord toIso(ScreenCoord);
 	ScreenCoord toScreen(IsoCoord);
 	void scroll(int, int);
 	void click(ScreenCoord, int);
 	void draw();
 	void test();
-	virtual ~View();
+	void debug();
 };
 
 } /* namespace std */
