@@ -19,9 +19,9 @@ class Tile {
 	Tile *adj[4];
 
 public:
-	unsigned int x, y;
+	unsigned int x, y, type;
 	bool pass;
-	Tile(unsigned int, unsigned int, bool);
+	Tile(unsigned int, unsigned int);
 	bool isPassable();
 	void connect(int, Tile *);
 	Tile *getAdj(int);

@@ -19,8 +19,21 @@ View::View(State *s) {
 
 	graph = new DrsFile("resource/graphics.drs");
 	terrain = new DrsFile("resource/terrain.drs");
-	tile = terrain->getResource(1, false);
-	tilen = terrain->getResource(2, false);
+
+	/* terrain graphics loading */
+	terrain_type = new Resource *[18];
+	for (int i = 0; i < 18; ++i) {
+		terrain_type[i] = terrain->getResource(i, false);
+	}
+
+	for (int x = 0; x < s->getMapSize(); ++x) {
+		for (int y = 0; y < s->getMapSize(); ++y) {
+			Tile *t = s->getTile(x, y);
+			TileView *tv = new TileView();
+			//tiles.push_back(*new TileView());
+		}
+	}
+
 	arch = new Type(p1, graph, 0);
 	cannon = new Type(p1, graph, 16);
 	//knt = new Type(p1, graph, 63);
@@ -60,6 +73,10 @@ ScreenCoord View::toScreen(IsoCoord ic) {
 	return s;
 }
 
+void View::size_ref(ScreenCoord *s) {
+	screen_size = s;
+}
+
 void View::scroll(int dx, int dy) {
 	next_view_x += dx;
 	next_view_y += dy;
@@ -94,23 +111,30 @@ void View::draw() {
 
 	for (int se = 0; se < state->getMapSize(); ++se) {
 		for (int ne = 0; ne < state->getMapSize(); ++ne) {
-			Tile *t = state->getTile(ne, se);
+			int tile_x = view_x+(se+ne)*48;
+			int tile_y = view_y+(ne-se)*24;
 
-			if ( t->isPassable() ) {
-				tile->getFrame(ne+se*10)->draw(view_x+(se+ne)*48, view_y+(ne-se)*24, 48);
-			}
-			else {
-				tilen->getFrame(ne+se*10)->draw(view_x+(se+ne)*48, view_y+(ne-se)*24, 48);
-			}
+			if (-96 <= tile_x && tile_x < screen_size->x && 0 <= tile_y && tile_y < screen_size->y + 48) {
+				Tile *t = state->getTile(ne, se);
 
-			// draw all objects on the tile
-			for (int i = 0; i < t->objs(); ++i) {
-				Instance *obj = t->getObj(i);
-				ScreenCoord sc = toScreen(obj->getIso());
-				obj->draw(sc);
 
-				if (obj == select) {
-					obj->type->circle.draw(sc.x, sc.y, 0);
+				terrain_type[ t->type ]->getFrame(ne+se*10)->draw(tile_x, tile_y, 48);
+			/*	if ( t->isPassable() ) {
+					terrain_type[0]->getFrame(ne+se*10)->draw(tile_x, tile_y, 48);
+				}
+				else {
+					terrain_type[1]->getFrame(ne+se*10)->draw(tile_x, tile_y, 48);
+				}*/
+
+				// draw all objects on the tile
+				for (int i = 0; i < t->objs(); ++i) {
+					Instance *obj = t->getObj(i);
+					ScreenCoord sc = toScreen(obj->getIso());
+					obj->draw(sc);
+
+					if (obj == select) {
+						obj->type->circle.draw(sc.x, sc.y, 0);
+					}
 				}
 			}
 		}

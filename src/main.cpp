@@ -10,9 +10,10 @@
 #include "Model/State.h"
 #include "Data/Data.h"
 #include "Graphics/View.h"
+#include "Model/Tile.h"
 
 
-#define SCROLL 15
+#define SCROLL 40
 
 using namespace std;
 
@@ -21,7 +22,9 @@ State *game_state;
 View *view;
 int color_table[256];
 
-int mode, height, width;
+int mode;
+
+ScreenCoord screen_size;
 
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
@@ -56,15 +59,15 @@ void keyboard(unsigned char key, int x, int y) {
 void mouse(int button, int state, int x, int y) {
 	ScreenCoord sc;
 	sc.x = x;
-	sc.y = height - y;
+	sc.y = screen_size.y - y;
 
 	// action on button up
 	if (state == 1) view->click(sc, button);
 }
 
 void reshape(int w, int h) {
-	width = w;
-	height = h;
+	screen_size.x = w;
+	screen_size.y = h;
 	glViewport(0, 0, w, h);
 
 	glMatrixMode( GL_PROJECTION );
@@ -108,6 +111,7 @@ int main(int argc, char *argv[]) {
 
 	game_state = new State();
 	view = new View(game_state);
+	view->size_ref(&screen_size);
 	mode = 0;
 
 	glEnable( GL_TEXTURE_RECTANGLE_NV );

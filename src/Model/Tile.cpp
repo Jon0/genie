@@ -12,18 +12,18 @@
 
 namespace std {
 
-Tile::Tile(unsigned int xi, unsigned int yi, bool p) {
+Tile::Tile(unsigned int xi, unsigned int yi) {
 	x = xi;
 	y = yi;
 	for (int i = 0; i < 4; ++i) {
 		adj[i] = NULL;
 	}
-	pass = p;
-
+	pass = true;
+	type = 0;
 }
 
 bool Tile::isPassable() {
-	return pass;
+	return obj.size() == 0;
 }
 
 void Tile::connect(int i, Tile *t) {
@@ -39,7 +39,7 @@ int Tile::objs() {
 }
 
 Instance *Tile::getObj(int i) {
-	if (i >= obj.size() ) cout << "dffd" <<endl;
+	if (i >= obj.size() ) cout << "error: object out of range" <<endl;
 	return obj.data()[i];
 }
 

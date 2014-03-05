@@ -29,6 +29,11 @@ void Texture::createTexture(int *image_data) {
 	glTexParameteri( GL_TEXTURE_RECTANGLE_NV, GL_TEXTURE_MAG_FILTER, GL_LINEAR );
 }
 
+void Texture::updateTexture(int *image_data) {
+	glBindTexture(GL_TEXTURE_RECTANGLE_NV, texture);
+	glTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+}
+
 void Texture::draw(int x, int y, int z) {
 	glPushMatrix();
 	glTranslatef(x-anchorx, y-height+anchory, -y-z);

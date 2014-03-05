@@ -22,6 +22,7 @@ public:
 	virtual ~Texture();
 
 	void createTexture(int *);
+	void updateTexture(int *);
 	void draw(int x, int y, int z);
 };
 

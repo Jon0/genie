@@ -9,9 +9,11 @@
 #define VIEW_H_
 
 #include <vector>
+
 #include "../def.h"
 #include "../DrsFile.h"
 #include "../Resource.h"
+#include "TileView.h"
 
 
 namespace std {
@@ -22,22 +24,25 @@ class Type;
 
 class View {
 	State *state;	// the state to show in view
-	vector<Instance *> obj;
+	vector<TileView> tiles;
 
 	DrsFile *graph;
 	DrsFile *terrain;
 
-	Resource *tile, *tilen;
+	Resource **terrain_type;
 	Type *arch, *knt, *cannon;
 	int view_x, view_y, next_view_x, next_view_y;
 
 	Instance *select;
+
+	ScreenCoord *screen_size;
 public:
 	View(State *);
 	virtual ~View();
 
 	IsoCoord toIso(ScreenCoord);
 	ScreenCoord toScreen(IsoCoord);
+	void size_ref(ScreenCoord *);
 	void scroll(int, int);
 	void click(ScreenCoord, int);
 	void draw();
