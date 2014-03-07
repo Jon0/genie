@@ -7,14 +7,85 @@
 
 #include "TileView.h"
 
+#include "../Graphics/Frame.h"
+#include "../Model/Tile.h"
+#include "../Types/Type.h"
+
+#include "../Instance.h"
+#include "../Resource.h"
+#include "Blend.h"
+#include "Blendomatic.h"
+#include "View.h"
+
 namespace std {
 
-TileView::TileView() {
+TileView::TileView(Tile *t, Resource **terrain_type, Blendomatic *blend) {
+	tile = t;
 
+	int ne = tile->x;
+	int se = tile->y;
+
+
+	Frame *a = terrain_type[tile->type]->getFrame((ne % 10) + (se % 10) * 10);
+	Blend *tile_blend = new Blend(a);
+
+	// for each direction
+	for (int i = 0; i < 4; ++i) {
+		Tile *n = tile->getAdj(i);
+
+		// neighbor is dominant
+		if (n && n->type > tile->type) {
+			Frame *b = terrain_type[n->type]->getFrame((ne % 10) + (se % 10) * 10);
+			tile_blend->mix(b, blend->getAngle(i));
+		}
+	}
+
+	tile_blend->makeTexture();
+	image = tile_blend;
 }
 
 TileView::~TileView() {
 
+}
+
+bool TileView::onScreen(View *v) {
+	int ne = tile->x;
+	int se = tile->y;
+
+	/* update tile position */
+	tile_x = v->view_x+(se+ne)*48;
+	tile_y = v->view_y+(ne-se)*24;
+	return -96 <= tile_x && tile_x < v->screen_size->x && 0 <= tile_y && tile_y < v->screen_size->y + 48;
+}
+
+void TileView::draw(View *v) {
+	if ( onScreen(v) ) {
+		image->draw(tile_x, tile_y, 48);
+
+		// draw all objects on the tile
+		for (int i = 0; i < tile->objs(); ++i) {
+			Instance *obj = tile->getObj(i);
+			ScreenCoord sc = v->toScreen(obj->getIso());
+			obj->draw(sc);
+
+			if (obj == v->select) {
+				obj->type->circle.draw(sc.x, sc.y, 0);
+			}
+		}
+	}
+}
+
+Instance *TileView::select(View *v, ScreenCoord sc) {
+	//if ( onScreen(v) ) {
+	//for (int i = 0; i < tile->objs(); ++i) {
+
+			//Instance *obj = tile->getObj(i);
+			//ScreenCoord sc = v->toScreen(obj->getIso());
+			//sc.x = click.x - sc.x;
+			//sc.y = click.y - sc.y;
+			//if (obj->pointCheck(sc)) return obj;
+	//}
+	//}
 }
 
 } /* namespace std */

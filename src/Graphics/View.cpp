@@ -14,11 +14,14 @@
 namespace std {
 
 View::View(State *s) {
+	state = s;
+
 	Player *p1 = new Player(rand() % 256, rand() % 256, rand() % 256); // 20, 40, 80
 	Player *p2 = new Player(rand() % 256, rand() % 256, rand() % 256); // 20, 40, 80
 
 	graph = new DrsFile("resource/graphics.drs");
 	terrain = new DrsFile("resource/terrain.drs");
+	blend = new Blendomatic();
 
 	/* terrain graphics loading */
 	terrain_type = new Resource *[18];
@@ -29,19 +32,29 @@ View::View(State *s) {
 	for (int x = 0; x < s->getMapSize(); ++x) {
 		for (int y = 0; y < s->getMapSize(); ++y) {
 			Tile *t = s->getTile(x, y);
-			TileView *tv = new TileView();
-			//tiles.push_back(*new TileView());
+			tiles.push_back(*new TileView(t, terrain_type, blend));
 		}
 	}
 
-	arch = new Type(p1, graph, 0);
-	cannon = new Type(p1, graph, 16);
-	//knt = new Type(p1, graph, 63);
-	knt = new Type(p2, graph, 104);
+	/* unit graphics loading */
+	cout << graph->resCount() << endl;
 
-	state = s;
+	for (int i = 0; i < 1000; ++i) {
+		Type *random = new Type(p1, graph, rand() % graph->resCount());
+
+		int x = rand() % state->getMapSize();
+		int y = rand() % state->getMapSize();
+		new Instance(state, random, x, y);
+	}
+
+	arch = new Type(p1, graph, 0, 0);
+	cannon = new Type(p1, graph, 16, 0);
+	//knt = new Type(p1, graph, 63);
+	knt = new Type(p2, graph, 104, 0);
+
 	new Instance(state, arch, 1, 1);
 	new Instance(state, arch, 2, 3);
+	new Instance(state, cannon, 7, 3);
 	select = new Instance(state, knt, 5, 3);
 
 	next_view_x = 100;
@@ -77,6 +90,15 @@ void View::size_ref(ScreenCoord *s) {
 	screen_size = s;
 }
 
+TileView *View::getTile(int x, int y) {
+	return &tiles.data()[y * state->getMapSize() + x];
+}
+
+Instance *View::atPoint(ScreenCoord s) {
+	TileView *tv = getTile(s.x, s.y);
+	//return tv->select(this, s);
+}
+
 void View::scroll(int dx, int dy) {
 	next_view_x += dx;
 	next_view_y += dy;
@@ -96,7 +118,7 @@ void View::click(ScreenCoord sc, int button) {
 
 			if (clicked_tile->objs() > 0) {
 				select = clicked_tile->getObj(0);
-				cout << "select" << endl;
+				cout << "select " << select->type->graphic_id << endl;
 			}
 		}
 		else if (button == 2 && select) {
@@ -111,32 +133,8 @@ void View::draw() {
 
 	for (int se = 0; se < state->getMapSize(); ++se) {
 		for (int ne = 0; ne < state->getMapSize(); ++ne) {
-			int tile_x = view_x+(se+ne)*48;
-			int tile_y = view_y+(ne-se)*24;
-
-			if (-96 <= tile_x && tile_x < screen_size->x && 0 <= tile_y && tile_y < screen_size->y + 48) {
-				Tile *t = state->getTile(ne, se);
-
-
-				terrain_type[ t->type ]->getFrame(ne+se*10)->draw(tile_x, tile_y, 48);
-			/*	if ( t->isPassable() ) {
-					terrain_type[0]->getFrame(ne+se*10)->draw(tile_x, tile_y, 48);
-				}
-				else {
-					terrain_type[1]->getFrame(ne+se*10)->draw(tile_x, tile_y, 48);
-				}*/
-
-				// draw all objects on the tile
-				for (int i = 0; i < t->objs(); ++i) {
-					Instance *obj = t->getObj(i);
-					ScreenCoord sc = toScreen(obj->getIso());
-					obj->draw(sc);
-
-					if (obj == select) {
-						obj->type->circle.draw(sc.x, sc.y, 0);
-					}
-				}
-			}
+			TileView *vt = getTile(ne, se);
+			vt->draw(this);
 		}
 	}
 }

@@ -23,9 +23,11 @@ class Type {
 	vector<Ability *> ability;	// functions would be better than classes
 public:
 	Circle circle;
-	float radius, speed;
+	float radius;
+	int graphic_id;
 
 	Type(Player *, DrsFile *, int);
+	Type(Player *, DrsFile *, int, int);
 	virtual ~Type();
 
 	//Instance *newInstance();

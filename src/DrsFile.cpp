@@ -30,6 +30,19 @@ DrsFile::DrsFile(const char *filename) {
 	}
 }
 
+DrsFile::~DrsFile() {
+	for (unsigned int t = 0; t < head.tables; t++) {
+		delete entry[t];
+	}
+	delete entry;
+	delete table;
+	file.close();
+}
+
+int DrsFile::resCount() {
+	return table[0].size;
+}
+
 Resource *DrsFile::getResource(int index, bool mirror) {
 	return getResource(NULL, index, mirror);
 }
@@ -42,13 +55,6 @@ Resource *DrsFile::getResource(Player *p, int index, bool mirror) {
 	return new Resource(p, selected->id, block, mirror);
 }
 
-DrsFile::~DrsFile() {
-	for (unsigned int t = 0; t < head.tables; t++) {
-		delete entry[t];
-	}
-	delete entry;
-	delete table;
-	file.close();
-}
+
 
 } /* namespace std */

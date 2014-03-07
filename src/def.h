@@ -26,5 +26,9 @@ struct Pointi {
 	int x, y;
 };
 
+struct color {
+	unsigned char b, g, r, a;
+};
+
 
 #endif /* DEF_H_ */

@@ -17,6 +17,7 @@ class Resource;
 class Move: public Ability {
 	Resource *image;
 	int group_size;
+	float speed;
 public:
 	Move(Resource *);
 	virtual bool comlpete();

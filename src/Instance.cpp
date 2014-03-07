@@ -4,6 +4,7 @@
  *  Created on: 9/07/2013
  *      Author: asdf
  */
+#include <iostream>
 
 #include "Model/State.h"
 #include "Model/Tile.h"
@@ -42,10 +43,16 @@ void Instance::setTask(Instance *i) {
 }
 
 void Instance::setTask(float x, float y, Tile *end) {
-	task = type->getMove(x, y);
-	arg = new Path(on, end, x-(int)x, y-(int)y);
-	target.ne = x;
-	target.se = y;
+	Ability *a = type->getMove(x, y);
+
+	/* test the ability existstCheck(sc)) return obj;
+	 *  */
+	if (a) {
+		task = a;
+		arg = new Path(on, end, x-(int)x, y-(int)y);
+		target.ne = x;
+		target.se = y;
+	}
 }
 
 void Instance::update() {
@@ -55,6 +62,10 @@ void Instance::update() {
 void Instance::draw(ScreenCoord sc) {
 	int i = (int)frame;
 	task->draw(sc.x, sc.y, direction, i);
+}
+
+bool Instance::pointCheck(ScreenCoord s) {
+	cout << s.x << ", " << s.y << endl;
 }
 
 Instance::~Instance() {

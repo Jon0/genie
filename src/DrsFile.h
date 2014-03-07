@@ -35,9 +35,12 @@ class DrsFile {
 	DrsEntry **entry;
 public:
 	DrsFile(const char *);
+	virtual ~DrsFile();
+
+	int resCount();
 	Resource *getResource(int, bool);
 	Resource *getResource(Player *, int index, bool mirror);
-	virtual ~DrsFile();
+
 };
 
 } /* namespace std */

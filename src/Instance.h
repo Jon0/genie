@@ -34,6 +34,7 @@ public:
 	void setTask(float x, float y, Tile *);
 	void update();
 	void draw(ScreenCoord);
+	bool pointCheck(ScreenCoord);
 	virtual ~Instance();
 };
 

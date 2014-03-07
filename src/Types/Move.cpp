@@ -16,6 +16,7 @@ namespace std {
 Move::Move(Resource *res) {
 	image = res;
 	group_size = res->getFrames() / 8;
+	speed = 0.03;
 }
 
 bool Move::comlpete() {
@@ -23,7 +24,6 @@ bool Move::comlpete() {
 }
 
 void Move::update(Instance *i) {
-	float speed = i->type->speed;
 	int xdir, ydir;
 
 	Path *path = (Path *)i->arg;
@@ -53,7 +53,6 @@ void Move::update(Instance *i) {
 }
 
 void Move::update_simple(Instance *i, float targetx, float targety) {
-	float speed = i->type->speed;
 		int xdir, ydir;
 
 		if (i->current.ne < targetx-speed) {

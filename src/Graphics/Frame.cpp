@@ -49,8 +49,6 @@ Frame::Frame(Player *player, unsigned char *data, int index, bool m) {
 
 	// create an opengl texture
 	createTexture(image_data);
-
-	delete[] image_data;
 }
 
 int Frame::readCommand(int x, int y, unsigned char *data) {

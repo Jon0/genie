@@ -31,10 +31,10 @@ struct FrameBounds {
 };
 
 class Frame: public Texture {
-	int *image_data;
 	bool mirror;
 	Player *owner;
 public:
+	int *image_data;
 	Frame(Player *, unsigned char *, int, bool);
 	int readCommand(int, int, unsigned char *);
 	void fill(int, int, int, unsigned char *, bool, bool);

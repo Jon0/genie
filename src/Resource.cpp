@@ -5,7 +5,6 @@
  *      Author: asdf
  */
 
-#include <iostream>
 #include "Resource.h"
 
 namespace std {

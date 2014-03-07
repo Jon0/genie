@@ -25,6 +25,8 @@ void Idle::update(Instance *i) {
 }
 
 void Idle::draw(int x, int y, int direction, int tick) {
+	if (group_size == 0) return;
+
 	image->getFrame(direction * group_size + tick % group_size)->draw(x, y, 0);
 }
 

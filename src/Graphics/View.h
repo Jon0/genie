@@ -13,6 +13,7 @@
 #include "../def.h"
 #include "../DrsFile.h"
 #include "../Resource.h"
+#include "Blendomatic.h"
 #include "TileView.h"
 
 
@@ -28,21 +29,25 @@ class View {
 
 	DrsFile *graph;
 	DrsFile *terrain;
-
+	Blendomatic *blend;
 	Resource **terrain_type;
-	Type *arch, *knt, *cannon;
-	int view_x, view_y, next_view_x, next_view_y;
 
-	Instance *select;
+	Type *arch, *knt, *cannon, *fireball;
+	int next_view_x, next_view_y;
 
-	ScreenCoord *screen_size;
 public:
+	Instance *select;
+	int view_x, view_y;
+	ScreenCoord *screen_size;
+
 	View(State *);
 	virtual ~View();
 
 	IsoCoord toIso(ScreenCoord);
 	ScreenCoord toScreen(IsoCoord);
 	void size_ref(ScreenCoord *);
+	TileView *getTile(int, int);
+	Instance *atPoint(ScreenCoord);
 	void scroll(int, int);
 	void click(ScreenCoord, int);
 	void draw();
