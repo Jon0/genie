@@ -5,19 +5,28 @@
  *      Author: asdf
  */
 
-#include "../Resource.h"
 #include "../Instance.h"
 #include "Idle.h"
 
 namespace std {
 
-Idle::Idle(Resource *res) {
+Idle::Idle(int gid) {
+	graphic_id = gid;
+	image = NULL;
+	group_size = 0;
+}
+
+void Idle::assignGraphic(Resource *res) {
 	image = res;
 	group_size = res->getFrames() / 8;
 }
 
 bool Idle::comlpete() {
 	return true;
+}
+
+bool Idle::canInvoke(Instance *) {
+	return false;
 }
 
 void Idle::update(Instance *i) {

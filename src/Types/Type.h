@@ -20,17 +20,20 @@ namespace std {
 class Instance;
 
 class Type {
-	vector<Ability *> ability;	// functions would be better than classes
 public:
-	Circle circle;
-	float radius;
-	int graphic_id;
+	vector<Ability *> ability;
+	int initial_hp;
+	Player *owner;
 
-	Type(Player *, DrsFile *, int);
-	Type(Player *, DrsFile *, int, int);
+	//Base *b .. define base for building or radius for unit
+	float radius; // buildings dont have this
+	Circle circle;
+
+	Type(Player *, int);
 	virtual ~Type();
 
 	//Instance *newInstance();
+	void addAbility(Ability *);
 	Ability *getAbility(Instance *obj);
 	Ability *getMove(float x, float y);
 	Frame *getFrame(Resource *, int, int);

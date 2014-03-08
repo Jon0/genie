@@ -12,17 +12,16 @@
 
 namespace std {
 
-class Resource;
-
 class Idle: public Ability {
-	Resource *image;
-	int group_size;
 public:
-	Idle(Resource *);
+	Idle(int gid);
+	virtual ~Idle();
+
+	virtual void assignGraphic(Resource *);
 	virtual bool comlpete();
+	virtual bool canInvoke(Instance *);
 	virtual void update(Instance *);
 	virtual void draw(int, int, int, int);
-	virtual ~Idle();
 };
 
 } /* namespace std */

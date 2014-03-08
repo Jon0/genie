@@ -15,16 +15,18 @@ namespace std {
 class Resource;
 
 class Move: public Ability {
-	Resource *image;
-	int group_size;
 	float speed;
 public:
-	Move(Resource *);
+	Move(int, float);
+	virtual ~Move();
+
+	virtual void assignGraphic(Resource *);
 	virtual bool comlpete();
+	virtual bool canInvoke(Instance *);
 	virtual void update(Instance *);
 	void update_simple(Instance *i, float, float);
 	virtual void draw(int, int, int, int);
-	virtual ~Move();
+
 };
 
 } /* namespace std */

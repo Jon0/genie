@@ -55,6 +55,7 @@ bool TileView::onScreen(View *v) {
 	/* update tile position */
 	tile_x = v->view_x+(se+ne)*48;
 	tile_y = v->view_y+(ne-se)*24;
+
 	return -96 <= tile_x && tile_x < v->screen_size->x && 0 <= tile_y && tile_y < v->screen_size->y + 48;
 }
 
@@ -75,17 +76,29 @@ void TileView::draw(View *v) {
 	}
 }
 
-Instance *TileView::select(View *v, ScreenCoord sc) {
-	//if ( onScreen(v) ) {
-	//for (int i = 0; i < tile->objs(); ++i) {
+Instance *TileView::select(View *v, ScreenCoord click) {
+	for (int i = 0; i < tile->objs(); ++i) {
+		Instance *obj = tile->getObj(i);
+		ScreenCoord sc = v->toScreen(obj->getIso()); // point anchor is drawn to
+		sc.x = click.x - sc.x;
+		sc.y = click.y - sc.y; // get point relative to anchor
+		if (obj->pointCheck(sc)) return obj;
+	}
 
-			//Instance *obj = tile->getObj(i);
-			//ScreenCoord sc = v->toScreen(obj->getIso());
-			//sc.x = click.x - sc.x;
-			//sc.y = click.y - sc.y;
-			//if (obj->pointCheck(sc)) return obj;
-	//}
-	//}
+	// need to check adjacent tiles too
+	for (int a = 0; a < 4; ++a) {
+		Tile *t = tile->getAdj(a);
+		if (t) {
+			for (int i = 0; i < t->objs(); ++i) {
+				Instance *obj = t->getObj(i);
+				ScreenCoord sc = v->toScreen(obj->getIso());
+				sc.x = click.x - sc.x;
+				sc.y = click.y - sc.y;
+				if (obj->pointCheck(sc)) return obj;
+			}
+		}
+	}
+
 }
 
 } /* namespace std */

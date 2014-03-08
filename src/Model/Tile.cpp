@@ -39,7 +39,7 @@ int Tile::objs() {
 }
 
 Instance *Tile::getObj(int i) {
-	if (i >= obj.size() ) cout << "error: object out of range" <<endl;
+	if (i >= obj.size() ) cout << "tile error: object out of range" <<endl;
 	return obj.data()[i];
 }
 

@@ -16,9 +16,6 @@ namespace std {
 View::View(State *s) {
 	state = s;
 
-	Player *p1 = new Player(rand() % 256, rand() % 256, rand() % 256); // 20, 40, 80
-	Player *p2 = new Player(rand() % 256, rand() % 256, rand() % 256); // 20, 40, 80
-
 	graph = new DrsFile("resource/graphics.drs");
 	terrain = new DrsFile("resource/terrain.drs");
 	blend = new Blendomatic();
@@ -29,33 +26,22 @@ View::View(State *s) {
 		terrain_type[i] = terrain->getResource(i, false);
 	}
 
-	for (int x = 0; x < s->getMapSize(); ++x) {
-		for (int y = 0; y < s->getMapSize(); ++y) {
+	for (int y = 0; y < s->getMapSize(); ++y) {
+		for (int x = 0; x < s->getMapSize(); ++x) {
 			Tile *t = s->getTile(x, y);
-			tiles.push_back(*new TileView(t, terrain_type, blend));
+			tiles.push_back(TileView(t, terrain_type, blend));
 		}
 	}
 
 	/* unit graphics loading */
-	cout << graph->resCount() << endl;
-
-	for (int i = 0; i < 1000; ++i) {
-		Type *random = new Type(p1, graph, rand() % graph->resCount());
-
-		int x = rand() % state->getMapSize();
-		int y = rand() % state->getMapSize();
-		new Instance(state, random, x, y);
+	for (int i = 0; i < s->types.size(); ++i) {
+		Type *t = &s->types.data()[i];
+		Player *p = t->owner;
+		for (int j = 0; j < t->ability.size(); ++j) {
+			int gid = t->ability.data()[j]->graphic_id;
+			t->ability.data()[j]->assignGraphic( graph->getResource(p, gid, true) );
+		}
 	}
-
-	arch = new Type(p1, graph, 0, 0);
-	cannon = new Type(p1, graph, 16, 0);
-	//knt = new Type(p1, graph, 63);
-	knt = new Type(p2, graph, 104, 0);
-
-	new Instance(state, arch, 1, 1);
-	new Instance(state, arch, 2, 3);
-	new Instance(state, cannon, 7, 3);
-	select = new Instance(state, knt, 5, 3);
 
 	next_view_x = 100;
 	next_view_y = 300;
@@ -91,12 +77,17 @@ void View::size_ref(ScreenCoord *s) {
 }
 
 TileView *View::getTile(int x, int y) {
-	return &tiles.data()[y * state->getMapSize() + x];
+	if (0 <= x && x < state->getMapSize() && 0 <= y && y < state->getMapSize())
+		return &tiles.data()[y * state->getMapSize() + x];
+	return NULL;
 }
 
 Instance *View::atPoint(ScreenCoord s) {
-	TileView *tv = getTile(s.x, s.y);
-	//return tv->select(this, s);
+	IsoCoord ic = toIso(s);
+	cout << "click " << ic.ne << ", " << ic.se << endl;
+	TileView *tv = getTile(ic.ne, ic.se);
+	if (tv) return tv->select(this, s);
+	return NULL;
 }
 
 void View::scroll(int dx, int dy) {
@@ -105,24 +96,29 @@ void View::scroll(int dx, int dy) {
 }
 
 void View::click(ScreenCoord sc, int button) {
-
 	// calculate isometric coord
 	IsoCoord ic = toIso(sc);
-
 	Tile *clicked_tile = state->getTile(ic.ne, ic.se);
 
 	if (0 <= ic.ne && ic.ne < state->getMapSize() && 0 <= ic.se && ic.se < state->getMapSize()) {
 
 		if (button == 0) {
-			select = NULL;
+			select = atPoint(sc);
 
-			if (clicked_tile->objs() > 0) {
-				select = clicked_tile->getObj(0);
-				cout << "select " << select->type->graphic_id << endl;
+			if (select) {
+				cout << "select " << select->getTask()->graphic_id << endl;
 			}
 		}
+
+		/* button 2 issues commands to selection */
 		else if (button == 2 && select) {
-			select->setTask(ic.ne, ic.se, clicked_tile);
+			Instance *ins = atPoint(sc);
+			if (ins) {
+				select->setTask(ins);
+			}
+			else {
+				select->setTask(ic.ne, ic.se, clicked_tile);
+			}
 		}
 	}
 }
@@ -150,16 +146,12 @@ void View::test() {
 }
 
 void View::debug() {
-
-	for (int se = 0; se < state->getMapSize(); ++se) {
-		cout << ":";
-		for (int ne = 0; ne < state->getMapSize(); ++ne) {
-			Tile *t = state->getTile(ne, se);
-			cout << t->objs() << ", ";
-		}
-		cout << endl;
+	if (select == NULL) {
+		cout << "no selection" << endl;
 	}
-
+	else {
+		cout << "x/y: " << select->current.ne << ", " << select->current.se << endl;
+	}
 }
 
 } /* namespace std */

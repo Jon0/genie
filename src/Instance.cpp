@@ -24,6 +24,7 @@ Instance::Instance(State *state, Type *t, float xi, float yi) {
 	target.ne = current.ne;
 	target.se = current.se;
 	direction = 0;
+	hp = type->initial_hp;
 	task = type->getAbility(NULL);
 	arg = NULL;
 	state->addObj(this);
@@ -45,7 +46,7 @@ void Instance::setTask(Instance *i) {
 void Instance::setTask(float x, float y, Tile *end) {
 	Ability *a = type->getMove(x, y);
 
-	/* test the ability existstCheck(sc)) return obj;
+	/* test the ability exist Check(sc)) return obj;
 	 *  */
 	if (a) {
 		task = a;
@@ -64,8 +65,21 @@ void Instance::draw(ScreenCoord sc) {
 	task->draw(sc.x, sc.y, direction, i);
 }
 
-bool Instance::pointCheck(ScreenCoord s) {
-	cout << s.x << ", " << s.y << endl;
+bool Instance::pointCheck(ScreenCoord sc) {
+	int i = (int)frame;
+	Frame *f = task->frame(direction, i);
+
+	if (f) {
+		int x = f->anchorx + sc.x;
+		int y = f->anchory - sc.y;
+		cout << "f " << i%task->group_size << ", " << x << "/" << f->width << ", " << y << "/" << f->height << endl;
+
+		if (0 <= x && x < f->width && 0 <= y && y < f->height) {
+			int *c = &f->image_data[x + y * f->width];
+			return c > 0;
+		}
+	}
+	return false;
 }
 
 Instance::~Instance() {

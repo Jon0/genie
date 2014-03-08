@@ -17,6 +17,9 @@ class Type;
 class State;
 class Tile;
 
+/*
+ * break into Instance and ClickableInstance?
+ */
 class Instance {
 	Ability *task;	// current task
 public:
@@ -24,7 +27,7 @@ public:
 	void *arg;	// arguments required for current task
 	float frame;
 	IsoCoord current, target;
-	int direction;
+	int direction, hp;
 	Tile *on;
 
 	Instance(State *s, Type *, float, float);

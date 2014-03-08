@@ -13,14 +13,24 @@
 
 namespace std {
 
-Move::Move(Resource *res) {
+Move::Move(int gid, float s) {
+	graphic_id = gid;
+	image = NULL;
+	group_size = 0;
+	speed = s;
+}
+
+void Move::assignGraphic(Resource *res) {
 	image = res;
 	group_size = res->getFrames() / 8;
-	speed = 0.03;
 }
 
 bool Move::comlpete() {
 	return true;
+}
+
+bool Move::canInvoke(Instance *) {
+	return false;
 }
 
 void Move::update(Instance *i) {
@@ -91,6 +101,8 @@ void Move::update_simple(Instance *i, float targetx, float targety) {
 }
 
 void Move::draw(int x, int y, int direction, int tick) {
+	if (group_size == 0) return;
+
 	image->getFrame(direction * group_size + tick % group_size)->draw(x, y, 0);
 	//cout << off[direction] + tick % dir[direction] << endl;
 }

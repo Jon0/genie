@@ -92,7 +92,7 @@ void idle() {
 int main(int argc, char *argv[]) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(800, 600);
+	glutInitWindowSize(1300, 700);
 
 	srand( time(NULL) );
 	//Data *data = new Data();
