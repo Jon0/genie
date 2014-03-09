@@ -27,17 +27,14 @@ public:
 
 	//Base *b .. define base for building or radius for unit
 	float radius; // buildings dont have this
-	Circle circle;
+	Circle circle; // TODO move to view
+	bool build;
 
-	Type(Player *, int);
+	Type(Player *, Ability *, bool);
 	virtual ~Type();
 
 	//Instance *newInstance();
 	void addAbility(Ability *);
-	Ability *getAbility(Instance *obj);
-	Ability *getMove(float x, float y);
-	Frame *getFrame(Resource *, int, int);
-
 };
 
 } /* namespace std */

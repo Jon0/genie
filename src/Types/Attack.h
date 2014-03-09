@@ -8,7 +8,7 @@
 #ifndef ATTACK_H_
 #define ATTACK_H_
 
-#include "Ability.h"
+#include "Move.h"
 
 namespace std {
 
@@ -21,6 +21,9 @@ public:
 	virtual ~Attack();
 
 	virtual bool canInvoke(Instance *);
+	virtual bool canInvoke(IsoCoord *);
+	virtual void invoke(Instance *i, Instance *target);
+	virtual bool update(Instance *i, void *);
 };
 
 } /* namespace std */

@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <iostream>
+
 #include "../Instance.h"
 #include "Tile.h"
 
@@ -63,7 +64,7 @@ void Tile::removeObj(Instance *ins) {
 	//}
 
 
-	cout << obj.size() << endl;
+	//cout << obj.size() << endl;
 }
 
 Tile::~Tile() {

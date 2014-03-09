@@ -8,8 +8,8 @@
 #ifndef STATE_H_
 #define STATE_H_
 
-#include <map>
 #include <vector>
+#include <list>
 
 #include "../def.h"
 #include "Tile.h"
@@ -24,13 +24,13 @@ public:
 	int edge_length;
 	vector<Tile> tile;
 	vector<Type> types;
-	vector<Instance *> allObj;
+	list<Instance> allObj;	// cannot modify sequence
 
 	State();
 	virtual ~State();
 
 	void update();
-	void addObj(Instance *);
+	void addObj(Instance);
 	Tile *getTile(int, int);
 	Tile *getTile(IsoCoord);
 	Tile *getTile(Pointi);

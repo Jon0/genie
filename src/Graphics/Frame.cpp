@@ -42,7 +42,7 @@ Frame::Frame(Player *player, unsigned char *data, int index, bool m) {
 		}
 		int f = readCommand(outline[2*y], y, &data[command[y]]);
 		if ( f + outline[2*y + 1] != head->width ) {
-			cout << "error" << endl;
+			cout << "frame error" << endl;
 			break;
 		}
 	}	// end height

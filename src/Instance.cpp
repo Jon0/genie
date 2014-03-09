@@ -4,11 +4,14 @@
  *  Created on: 9/07/2013
  *      Author: asdf
  */
+
 #include <iostream>
+#include <math.h>
 
 #include "Model/State.h"
 #include "Model/Tile.h"
 #include "Model/Path.h"
+#include "Types/Dead.h"
 #include "Types/Ability.h"
 #include "Types/Type.h"
 #include "Instance.h"
@@ -16,19 +19,21 @@
 namespace std {
 
 Instance::Instance(State *state, Type *t, float xi, float yi) {
-	frame = 0;
+	gs = state;
 	type = t;
 
 	current.ne = xi;
 	current.se = yi;
-	target.ne = current.ne;
-	target.se = current.se;
 	direction = 0;
 	hp = type->initial_hp;
-	task = type->getAbility(NULL);
-	arg = NULL;
-	state->addObj(this);
+	frame = 0;
 	on = state->getTile( (int)xi, (int)yi );
+
+	//task_arg ta;
+	//ta.ability = type->ability.data()[0];
+	//task.push_back(ta);
+
+	setTask(NULL);
 }
 
 IsoCoord Instance::getIso() {
@@ -36,43 +41,65 @@ IsoCoord Instance::getIso() {
 }
 
 Ability *Instance::getTask() {
-	return task;
+	return task.back().ability;
 }
 
-void Instance::setTask(Instance *i) {
-	task = type->getAbility(i);
+float Instance::dist(Instance *other) {
+	int dx = other->current.ne - current.ne;
+	int dy = other->current.se - current.se;
+	return sqrt(dx*dx + dy*dy);
 }
 
-void Instance::setTask(float x, float y, Tile *end) {
-	Ability *a = type->getMove(x, y);
+float Instance::dist(IsoCoord *point) {
+	int dx = point->ne - current.ne;
+	int dy = point->se - current.se;
+	return sqrt(dx*dx + dy*dy);
+}
 
-	/* test the ability exist Check(sc)) return obj;
-	 *  */
-	if (a) {
-		task = a;
-		arg = new Path(on, end, x-(int)x, y-(int)y);
-		target.ne = x;
-		target.se = y;
+void Instance::setTask(Instance *target) {
+	for (int i = 0; i < type->ability.size(); ++i) {
+		if ( type->ability.data()[i]->canInvoke(target) ) {
+			type->ability.data()[i]->invoke(this, target);
+		}
 	}
 }
 
-void Instance::update() {
-	task->update(this);
+void Instance::setTask(IsoCoord *target, float radius) {
+	for (int i = 0; i < type->ability.size(); ++i) {
+		if ( type->ability.data()[i]->canInvoke(target) ) {
+			type->ability.data()[i]->invoke(this, target, radius);
+		}
+	}
+}
+
+void Instance::stopTask() {
+	// stops any user controlable tasks
+	while (task.size() > 2) task.pop_back();
+}
+
+bool Instance::update(State *s) {
+	// TODO update all tasks?
+
+	if ( task.back().ability->update(this, task.back().arg) ) {
+		task.pop_back();
+	}
+
+	return task.empty(); // remove from game when no task
 }
 
 void Instance::draw(ScreenCoord sc) {
-	int i = (int)frame;
-	task->draw(sc.x, sc.y, direction, i);
+	Frame *f = task.back().ability->frame(direction, (int)frame);
+	if (f) f->draw(sc.x, sc.y, 0);
 }
 
 bool Instance::pointCheck(ScreenCoord sc) {
 	int i = (int)frame;
-	Frame *f = task->frame(direction, i);
+	Frame *f = task.back().ability->frame(direction, i);
 
 	if (f) {
 		int x = f->anchorx + sc.x;
 		int y = f->anchory - sc.y;
-		cout << "f " << i%task->group_size << ", " << x << "/" << f->width << ", " << y << "/" << f->height << endl;
+		//cout << "f " << i%task->group_size << ", " << x << "/" << f->width << ", " << y << "/" << f->height << endl;
 
 		if (0 <= x && x < f->width && 0 <= y && y < f->height) {
 			int *c = &f->image_data[x + y * f->width];

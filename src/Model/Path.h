@@ -9,15 +9,20 @@
 #define PATH_H_
 
 #include <vector>
+
+#include "../def.h"
 #include "Tile.h"
 
 namespace std {
+
+class State;
 
 class Path {
 public:
 	unsigned short step;
 	vector<Tile *> point;	// waypoints
 	Path(Tile *, Tile *, float, float);
+	Path(State *, IsoCoord, IsoCoord);
 	virtual ~Path();
 };
 

@@ -13,6 +13,7 @@
 namespace std {
 
 class Idle: public Ability {
+	float inc_rate;
 public:
 	Idle(int gid);
 	virtual ~Idle();
@@ -20,8 +21,10 @@ public:
 	virtual void assignGraphic(Resource *);
 	virtual bool comlpete();
 	virtual bool canInvoke(Instance *);
-	virtual void update(Instance *);
-	virtual void draw(int, int, int, int);
+	virtual bool canInvoke(IsoCoord *);
+	virtual void invoke(Instance *, Instance *);
+	virtual void invoke(Instance *, IsoCoord *, float);
+	virtual bool update(Instance *, void *);
 };
 
 } /* namespace std */

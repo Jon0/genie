@@ -5,7 +5,10 @@
  *      Author: asdf
  */
 
+#include "../Types/Dead.h"
+#include "../Types/Idle.h"
 #include "../Types/Move.h"
+#include "../Types/Attack.h"
 #include "../Instance.h"
 #include "Player.h"
 #include "State.h"
@@ -53,41 +56,98 @@ State::State() {
 
 	/* unit types */
 	/* unit graphics loading */
-	types.reserve(1000);
-	allObj.reserve(1000);
+	types.reserve(20000);
+	//allObj.reserve(1000);
 
-	for (int i = 0; i < 500; ++i) {
-		int k = rand() % 1766;
-		types.push_back(Type (p1, k));
+
+	// nice objects
+	int objs[] = {0, 16, 55, 70, 104,
+			168, 178, 210, 238, 305,
+			354, 453, 491, 496, 693,
+			693, 704, 730, 741, 747,
+			763, 785, 974, 1278, 1310,
+			1334, 1452, 1471, 1480, 1501,
+			1759};
+	for (int i = 0; i < 31; ++i) {
+		int k = objs[i];
+		types.push_back(Type (p1, new Dead( k+1 ), false));
 		Type *random = &types.back();
-		random->addAbility( new Move( k+2, 0.03 ) );
-		int x = rand() % getMapSize();
-		int y = rand() % getMapSize();
-		new Instance(this, random, x, y);
+		random->addAbility( new Idle( k+2 ) );
+		random->addAbility( new Move( k+4, 0.03 ) );
+		random->addAbility( new Attack( k ) );
+
+
+		for (int i = 0; i < 3; ++i) {
+			int x = rand() % getMapSize();
+			int y = rand() % getMapSize();
+			addObj( Instance(this, random, x, y) );
+		}
+	}
+
+	int blds[] = {575, 1556, 1678};
+	for (int i = 0; i < 3; ++i) {
+		int k = blds[i];
+		types.push_back(Type (p1, new Idle( k ), true));
+		Type *random = &types.back();
+		for (int i = 0; i < 3; ++i) {
+			int x = rand() % getMapSize();
+			int y = rand() % getMapSize();
+			addObj( Instance(this, random, x, y) );
+		}
 	}
 
 
-
-	types.push_back( Type(p1, 0 + 2) );
+	types.push_back( Type(p1, new Dead( 0 + 1 ), false) );
 	Type *arch = &types.back();
+	arch->addAbility( new Idle( 0+2 ) );
 	arch->addAbility( new Move( 0+4, 0.03 ) );
+	arch->addAbility( new Attack( 0 ) );
 
 
-	types.push_back(Type (p1, 16 + 2));
+	types.push_back(Type (p1, new Dead( 16 + 1 ), false));
 	Type *cannon = &types.back();
+	cannon->addAbility( new Idle( 16+2 ) );
 	cannon->addAbility( new Move( 16+4, 0.02 ) );
+	cannon->addAbility( new Attack( 16 ) );
 
 	//types.push_back(Type (p1, 63 + 2));
 	//Type *arch = &types.back();
 
-	types.push_back(Type (p1, 104 + 2));
+	types.push_back(Type (p1, new Dead( 104 + 1 ), false));
 	Type *knt = &types.back();
+	knt->addAbility( new Idle( 104+2 ) );
 	knt->addAbility( new Move( 104+4, 0.07 ) );
+	knt->addAbility( new Attack( 104 ) );
 
-	new Instance(this, arch, 1, 1);
-	new Instance(this, arch, 2, 3);
-	new Instance(this, cannon, 7, 3);
-	new Instance(this, knt, 5, 3);
+	addObj( Instance(this, arch, 1, 1) );
+	addObj( Instance(this, arch, 2, 3) );
+	addObj( Instance(this, cannon, 7, 3) );
+	addObj( Instance(this, knt, 5, 3) );
+
+	// completly random objects
+	for (int i = 0; i < 100; ++i) {
+		int k = rand() % 1764;
+		types.push_back(Type (p2, new Dead( k+1 ), false));
+		Type *random = &types.back();
+		random->addAbility( new Idle( k+2 ) );
+		random->addAbility( new Move( k+4, 0.03 ) );
+		int x = rand() % getMapSize();
+		int y = rand() % getMapSize();
+
+		addObj( Instance(this, random, x, y) );
+	}
+
+	for (int i = 0; i < 200; ++i) {
+		int k = rand() % 1764;
+		types.push_back(Type (p2, new Idle( k ), true));
+		Type *random = &types.back();
+
+		int x = rand() % getMapSize();
+		int y = rand() % getMapSize();
+
+		addObj( Instance(this, random, x, y) );
+	}
+
 }
 
 State::~State() {
@@ -95,14 +155,25 @@ State::~State() {
 }
 
 void State::update() {
-	for (unsigned int i = 0; i < allObj.size(); ++i) {
-		allObj.data()[i]->update();
+	// update all objects, removing any untasked items
+	for (list<Instance>::iterator i = allObj.begin(); i != allObj.end();) {
+		if ( (*i).update(this) ) {
+			cout << "remove " << &(*i) << endl;
+
+			(*i).on->removeObj(&(*i));
+			i = allObj.erase(i);
+
+			cout << "state " << allObj.size() << endl;
+		} else {
+			++i;
+		}
 	}
 }
 
-void State::addObj(Instance *obj) {
+void State::addObj(Instance obj) {
 	allObj.push_back(obj);
-	getTile(obj->getIso())->addObj(obj);
+	Instance *ins = &allObj.back();
+	getTile(obj.getIso())->addObj(ins);
 }
 
 Tile *State::getTile(int x, int y) {

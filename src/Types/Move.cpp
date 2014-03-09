@@ -6,6 +6,7 @@
  */
 
 #include "../Model/Path.h"
+#include "../Model/State.h"
 #include "../Resource.h"
 #include "../Instance.h"
 #include "Type.h"
@@ -22,7 +23,13 @@ Move::Move(int gid, float s) {
 
 void Move::assignGraphic(Resource *res) {
 	image = res;
-	group_size = res->getFrames() / 8;
+
+	if ( res->getFrames()  >= 8) {
+		group_size = res->getFrames() / 8;
+	}
+	else {
+		group_size = res->getFrames();
+	}
 }
 
 bool Move::comlpete() {
@@ -33,26 +40,51 @@ bool Move::canInvoke(Instance *) {
 	return false;
 }
 
-void Move::update(Instance *i) {
+bool Move::canInvoke(IsoCoord *) {
+	return true;
+}
+
+void Move::invoke(Instance *, Instance *) {
+
+}
+
+void Move::invoke(Instance *i, IsoCoord *target, float radius) {
+	move_args *ma = new move_args();
+	ma->path = new Path(i->on, i->gs->getTile(target->ne, target->se), target->ne - (int) target->ne, target->se - (int) target->se);
+	ma->target = target;
+	ma->range = radius;
+
+	task_arg t;
+	t.ability = this;
+	t.arg = ma;
+	i->task.push_back(t);
+}
+
+
+bool Move::update(Instance *i, void *arg) {
 	int xdir, ydir;
 
-	Path *path = (Path *)i->arg;
-	if (path->point.size() == 0) {
-		i->setTask(NULL);
-		return;
+	move_args *ma = (move_args *) arg;
+	Path *path = ma->path;
+
+	/*
+	 * path empty, or within range
+	 */
+	if (path->point.size() == 0 || i->dist(ma->target) <= ma->range) {
+		return true;
 	}
 
 
 	Tile *next = path->point.data()[path->step];
 	update_simple(i, next->x, next->y);
 
-
+	bool complete = false;
 	if ((int)i->current.ne == next->x && (int)i->current.se == next->y) {
 		if (path->step < path->point.size()-1) {
 			path->step++;
 		}
 		else {
-			i->setTask(NULL);
+			complete = true;
 		}
 		i->on->removeObj(i);
 		i->on = next;
@@ -60,6 +92,7 @@ void Move::update(Instance *i) {
 	}
 
 	i->frame += 0.5;
+	return complete;
 }
 
 void Move::update_simple(Instance *i, float targetx, float targety) {
@@ -98,13 +131,6 @@ void Move::update_simple(Instance *i, float targetx, float targety) {
 		else if (xdir < 0 && ydir == 0) i->direction = 1;
 		else if (xdir == 0 && ydir > 0) i->direction = 5;
 		else if (xdir == 0 && ydir < 0) i->direction = 3;
-}
-
-void Move::draw(int x, int y, int direction, int tick) {
-	if (group_size == 0) return;
-
-	image->getFrame(direction * group_size + tick % group_size)->draw(x, y, 0);
-	//cout << off[direction] + tick % dir[direction] << endl;
 }
 
 Move::~Move() {

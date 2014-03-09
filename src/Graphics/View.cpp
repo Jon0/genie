@@ -39,7 +39,7 @@ View::View(State *s) {
 		Player *p = t->owner;
 		for (int j = 0; j < t->ability.size(); ++j) {
 			int gid = t->ability.data()[j]->graphic_id;
-			t->ability.data()[j]->assignGraphic( graph->getResource(p, gid, true) );
+			t->ability.data()[j]->assignGraphic( graph->getResource(p, gid, !t->build) );
 		}
 	}
 
@@ -84,7 +84,7 @@ TileView *View::getTile(int x, int y) {
 
 Instance *View::atPoint(ScreenCoord s) {
 	IsoCoord ic = toIso(s);
-	cout << "click " << ic.ne << ", " << ic.se << endl;
+	//cout << "click " << ic.ne << ", " << ic.se << endl;
 	TileView *tv = getTile(ic.ne, ic.se);
 	if (tv) return tv->select(this, s);
 	return NULL;
@@ -113,11 +113,12 @@ void View::click(ScreenCoord sc, int button) {
 		/* button 2 issues commands to selection */
 		else if (button == 2 && select) {
 			Instance *ins = atPoint(sc);
+			select->stopTask();
 			if (ins) {
 				select->setTask(ins);
 			}
 			else {
-				select->setTask(ic.ne, ic.se, clicked_tile);
+				select->setTask(new IsoCoord(ic), 0.0f);
 			}
 		}
 	}
@@ -136,12 +137,6 @@ void View::draw() {
 }
 
 void View::test() {
-	Ability *a = knt->getAbility(NULL);
-	for (int d = 0; d < 8; ++d) {
-		for (int t = 0; t < 10; ++t) {
-			a->draw((t+1) * 50, (d+1) * 50, d, t);
-		}
-	}
 
 }
 
@@ -151,6 +146,7 @@ void View::debug() {
 	}
 	else {
 		cout << "x/y: " << select->current.ne << ", " << select->current.se << endl;
+		cout << "tasks " << select->task.size() << endl;
 	}
 }
 

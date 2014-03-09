@@ -7,15 +7,15 @@
 
 #include <stdlib.h>
 #include <iostream>
+
+#include "State.h"
 #include "Path.h"
 
 namespace std {
 
 Path::Path(Tile *start, Tile *end, float x, float y) {
 	step = 0;
-	cout << start->x << ", " << start->y << " => "<< end->x << ", " << end->y << " p = " << end->pass << endl;
-
-
+	//cout << start->x << ", " << start->y << " => "<< end->x << ", " << end->y << " p = " << end->pass << endl;
 
 	Tile *at = start;
 	while (at != end) {
@@ -35,10 +35,18 @@ Path::Path(Tile *start, Tile *end, float x, float y) {
 			cout << "no path found" << endl;
 			break;
 		}
-		cout << at->x << ", " << at->y << " => "<< at->pass << endl;
+		//cout << at->x << ", " << at->y << " => "<< at->pass << endl;
 
 		point.push_back(at);
 	}
+
+}
+
+Path::Path(State *s, IsoCoord a, IsoCoord b): Path(
+		s->getTile(a.ne, a.se),
+		s->getTile(b.ne, b.se),
+		a.ne - (int) a.ne,
+		b.se - (int) b.se) {
 
 }
 
