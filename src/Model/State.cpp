@@ -5,6 +5,8 @@
  *      Author: asdf
  */
 
+#include <random>
+
 #include "../Types/Dead.h"
 #include "../Types/Idle.h"
 #include "../Types/Move.h"
@@ -16,6 +18,8 @@
 namespace std {
 
 State::State() {
+	//default_random_engine gen(seed);
+
 	edge_length = 100;
 
 	/* produce tile array */
@@ -133,7 +137,6 @@ State::State() {
 		random->addAbility( new Move( k+4, 0.03 ) );
 		int x = rand() % getMapSize();
 		int y = rand() % getMapSize();
-
 		addObj( Instance(this, random, x, y) );
 	}
 
@@ -144,7 +147,6 @@ State::State() {
 
 		int x = rand() % getMapSize();
 		int y = rand() % getMapSize();
-
 		addObj( Instance(this, random, x, y) );
 	}
 
