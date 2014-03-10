@@ -60,19 +60,19 @@ State::State() {
 
 	/* unit types */
 	/* unit graphics loading */
-	types.reserve(20000);
+	types.reserve(1000);
 	//allObj.reserve(1000);
 
 
 	// nice objects
-	int objs[] = {0, 16, 55, 70, 104,
+	int objs[] = {0, 16, 55, 63, 70, 104,
 			168, 178, 210, 238, 305,
 			354, 453, 491, 496, 693,
 			693, 704, 730, 741, 747,
 			763, 785, 974, 1278, 1310,
 			1334, 1452, 1471, 1480, 1501,
 			1759};
-	for (int i = 0; i < 31; ++i) {
+	for (int i = 0; i < 32; ++i) {
 		int k = objs[i];
 		types.push_back(Type (p1, new Dead( k+1 ), false));
 		Type *random = &types.back();
@@ -80,7 +80,6 @@ State::State() {
 		random->addAbility( new Move( k+4, 0.03 ) );
 		random->addAbility( new Attack( k ) );
 
-
 		for (int i = 0; i < 3; ++i) {
 			int x = rand() % getMapSize();
 			int y = rand() % getMapSize();
@@ -88,67 +87,64 @@ State::State() {
 		}
 	}
 
-	int blds[] = {575, 1556, 1678};
-	for (int i = 0; i < 3; ++i) {
-		int k = blds[i];
-		types.push_back(Type (p1, new Idle( k ), true));
-		Type *random = &types.back();
-		for (int i = 0; i < 3; ++i) {
-			int x = rand() % getMapSize();
-			int y = rand() % getMapSize();
-			addObj( Instance(this, random, x, y) );
-		}
-	}
+	//int blds[] = {575, 1556, 1678};
+	//for (int i = 0; i < 3; ++i) {
+	//	int k = blds[i];
+	//	types.push_back(Type (p1, new Idle( k ), true));
+	//	Type *random = &types.back();
+	//	for (int i = 0; i < 3; ++i) {
+	//		int x = rand() % getMapSize();
+	//		int y = rand() % getMapSize();
+	//		addObj( Instance(this, random, x, y) );
+	//	}
+	//}
 
 
-	types.push_back( Type(p1, new Dead( 0 + 1 ), false) );
-	Type *arch = &types.back();
-	arch->addAbility( new Idle( 0+2 ) );
-	arch->addAbility( new Move( 0+4, 0.03 ) );
-	arch->addAbility( new Attack( 0 ) );
-
-
-	types.push_back(Type (p1, new Dead( 16 + 1 ), false));
-	Type *cannon = &types.back();
-	cannon->addAbility( new Idle( 16+2 ) );
-	cannon->addAbility( new Move( 16+4, 0.02 ) );
-	cannon->addAbility( new Attack( 16 ) );
-
-	//types.push_back(Type (p1, 63 + 2));
+	//types.push_back( Type(p1, new Dead( 0 + 1 ), false) );
 	//Type *arch = &types.back();
+	//arch->addAbility( new Idle( 0+2 ) );
+	//arch->addAbility( new Move( 0+4, 0.03 ) );
+	//arch->addAbility( new Attack( 0 ) );
 
-	types.push_back(Type (p1, new Dead( 104 + 1 ), false));
-	Type *knt = &types.back();
-	knt->addAbility( new Idle( 104+2 ) );
-	knt->addAbility( new Move( 104+4, 0.07 ) );
-	knt->addAbility( new Attack( 104 ) );
 
-	addObj( Instance(this, arch, 1, 1) );
-	addObj( Instance(this, arch, 2, 3) );
-	addObj( Instance(this, cannon, 7, 3) );
-	addObj( Instance(this, knt, 5, 3) );
+	//types.push_back(Type (p1, new Dead( 16 + 1 ), false));
+	//Type *cannon = &types.back();
+	//cannon->addAbility( new Idle( 16+2 ) );
+	//cannon->addAbility( new Move( 16+4, 0.02 ) );
+	//cannon->addAbility( new Attack( 16 ) );
 
-	// completly random objects
-	for (int i = 0; i < 100; ++i) {
-		int k = rand() % 1764;
-		types.push_back(Type (p2, new Dead( k+1 ), false));
-		Type *random = &types.back();
-		random->addAbility( new Idle( k+2 ) );
-		random->addAbility( new Move( k+4, 0.03 ) );
-		int x = rand() % getMapSize();
-		int y = rand() % getMapSize();
-		addObj( Instance(this, random, x, y) );
-	}
+	//types.push_back(Type (p1, new Dead( 104 + 1 ), false));
+	//Type *knt = &types.back();
+	//knt->addAbility( new Idle( 104+2 ) );
+	//knt->addAbility( new Move( 104+4, 0.07 ) );
+	//knt->addAbility( new Attack( 104 ) );
 
-	for (int i = 0; i < 200; ++i) {
-		int k = rand() % 1764;
-		types.push_back(Type (p2, new Idle( k ), true));
-		Type *random = &types.back();
+	//addObj( Instance(this, arch, 1, 1) );
+	//addObj( Instance(this, arch, 2, 3) );
+	//addObj( Instance(this, cannon, 7, 3) );
+	//addObj( Instance(this, knt, 5, 3) );
 
-		int x = rand() % getMapSize();
-		int y = rand() % getMapSize();
-		addObj( Instance(this, random, x, y) );
-	}
+	//// completly random objects
+	//for (int i = 0; i < 10; ++i) {
+	//	int k = rand() % 1764;
+	//	types.push_back(Type (p2, new Dead( k+1 ), false));
+	//	Type *random = &types.back();
+	//	random->addAbility( new Idle( k+2 ) );
+	//	random->addAbility( new Move( k+4, 0.03 ) );
+	//	int x = rand() % getMapSize();
+	//	int y = rand() % getMapSize();
+	//	addObj( Instance(this, random, x, y) );
+	//}
+
+	//for (int i = 0; i < 20; ++i) {
+	//	int k = rand() % 1764;
+	//	types.push_back(Type (p2, new Idle( k ), true));
+	//	Type *random = &types.back();
+
+	//	int x = rand() % getMapSize();
+	//	int y = rand() % getMapSize();
+	//	addObj( Instance(this, random, x, y) );
+	//}
 
 }
 

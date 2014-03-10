@@ -5,7 +5,13 @@
  *      Author: asdf
  */
 
-#include <GL/glut.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define GLEW_STATIC
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
+
 #include "def.h"
 #include "Model/State.h"
 #include "Data/Data.h"
@@ -25,6 +31,10 @@ int color_table[256];
 int mode;
 
 ScreenCoord screen_size;
+
+void error_callback(int error, const char* description) {
+	cerr << description << endl;
+}
 
 void keyboard(unsigned char key, int x, int y) {
 	switch (key) {
@@ -47,11 +57,11 @@ void keyboard(unsigned char key, int x, int y) {
 		view->scroll(-SCROLL, 0);
 		break;
 	case '.':
-		glutFullScreen();
+		//glutFullScreen();
 		break;
 	case ',':
-		glutReshapeWindow(800, 600);
-		glutPositionWindow(0,0);
+		//glutReshapeWindow(800, 600);
+		//glutPositionWindow(0,0);
 		break;
 	}
 }
@@ -80,19 +90,29 @@ void reshape(int w, int h) {
 void drawCallback() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	game_state->update();
-	if (mode == 0) view->draw();
-	else view->test();
-	glutSwapBuffers();
+	//if (mode == 0) 
+	view->draw();
+	//else view->test();
+	//glutSwapBuffers();
 }
 
 void idle() {
-	glutPostRedisplay();
+	//glutPostRedisplay();
 }
 
 int main(int argc, char *argv[]) {
-	glutInit(&argc, argv);
-	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
-	glutInitWindowSize(1300, 700);
+	if (!glfwInit()) exit(EXIT_FAILURE);
+
+	glfwSetErrorCallback(error_callback);
+
+	GLFWwindow* window = glfwCreateWindow(1300, 700, "Test", NULL, NULL);
+	glfwMakeContextCurrent(window);
+
+	// Initialize GLEW
+	if (glewInit() != GLEW_OK) {
+		cerr << "Failed to initialize GLEW" << endl;
+		exit(EXIT_FAILURE);
+	}
 
 	srand( time(NULL) );
 	//Data *data = new Data();
@@ -105,9 +125,6 @@ int main(int argc, char *argv[]) {
 	for (int i = 0; i < 256; ++i) {
 		color_table[i] = (color_table[i] >> 8) | 0xff000000;
 	}
-
-
-	g_mainWnd = glutCreateWindow("Test");
 
 	game_state = new State();
 	view = new View(game_state);
@@ -124,13 +141,27 @@ int main(int argc, char *argv[]) {
 	glEnable( GL_ALPHA_TEST );
 	glAlphaFunc( GL_GREATER, 0.1 );
 
+	/* Make the window's context current */
+	glfwMakeContextCurrent(window);
 
-	glutIdleFunc(idle);
-	glutDisplayFunc(drawCallback);
-	glutReshapeFunc(reshape);
-	glutKeyboardFunc(keyboard);
-	glutMouseFunc(mouse);
-	glutMainLoop();
+	reshape(1300, 700);
+
+	/* Loop until the user closes the window */
+	while (!glfwWindowShouldClose(window))
+	{
+		/* Render here */
+		drawCallback();
+
+		/* Swap front and back buffers */
+		glFlush();
+		glfwSwapBuffers(window);
+
+		/* Poll for and process events */
+		//glfwPollEvents();
+		glfwWaitEvents();
+	}
+
+	glfwTerminate();
 
 	return 0;
 }

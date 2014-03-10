@@ -8,7 +8,8 @@
 #ifndef TEXTURE_H_
 #define TEXTURE_H_
 
-#include <GL/gl.h>
+#include <GL/glew.h>
+#include <GLFW/glfw3.h>
 
 namespace std {
 

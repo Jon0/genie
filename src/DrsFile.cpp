@@ -11,6 +11,8 @@ namespace std {
 
 DrsFile::DrsFile(const char *filename) {
 	file.open(filename, ios::in | ios::binary);
+
+	if (file) cout << "file found" << endl;
 	file.seekg(0, ios::beg);
 	file.read((char *) &head, sizeof(DrsHeader));
 
