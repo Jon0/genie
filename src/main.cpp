@@ -28,6 +28,7 @@ State *game_state;
 View *view;
 int color_table[256];
 
+ScreenCoord mouseCoord;
 int mode;
 
 ScreenCoord screen_size;
@@ -36,24 +37,24 @@ void error_callback(int error, const char* description) {
 	cerr << description << endl;
 }
 
-void keyboard(unsigned char key, int x, int y) {
+void keyboard(GLFWwindow *, int key, int scancode, int action, int mods) {
 	switch (key) {
-	case 'q':
+	case GLFW_KEY_Q:
 		view->debug();
 		break;
-	case 'p':
+	case GLFW_KEY_P:
 		mode = 1;
 		break;
-	case 'y':
+	case GLFW_KEY_Y:
 		view->scroll(0, -SCROLL);
 		break;
-	case 'h':
+	case GLFW_KEY_H:
 		view->scroll(0, SCROLL);
 		break;
-	case 'g':
+	case GLFW_KEY_G:
 		view->scroll(SCROLL, 0);
 		break;
-	case 'j':
+	case GLFW_KEY_J:
 		view->scroll(-SCROLL, 0);
 		break;
 	case '.':
@@ -66,13 +67,14 @@ void keyboard(unsigned char key, int x, int y) {
 	}
 }
 
-void mouse(int button, int state, int x, int y) {
-	ScreenCoord sc;
-	sc.x = x;
-	sc.y = screen_size.y - y;
-
+void mouse(GLFWwindow *, int button, int action, int mods) {
 	// action on button up
-	if (state == 1) view->click(sc, button);
+	if (action == GLFW_RELEASE) view->click(mouseCoord, button);
+}
+
+void mousePos(GLFWwindow *, double x, double y) {
+	mouseCoord.x = x;
+	mouseCoord.y = screen_size.y - y;
 }
 
 void reshape(int w, int h) {
@@ -90,10 +92,7 @@ void reshape(int w, int h) {
 void drawCallback() {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	game_state->update();
-	//if (mode == 0) 
 	view->draw();
-	//else view->test();
-	//glutSwapBuffers();
 }
 
 void idle() {
@@ -143,6 +142,9 @@ int main(int argc, char *argv[]) {
 
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
+	glfwSetKeyCallback(window, keyboard);
+	glfwSetCursorPosCallback(window, mousePos);
+	glfwSetMouseButtonCallback(window, mouse);
 
 	reshape(1300, 700);
 
@@ -157,10 +159,11 @@ int main(int argc, char *argv[]) {
 		glfwSwapBuffers(window);
 
 		/* Poll for and process events */
-		//glfwPollEvents();
-		glfwWaitEvents();
-	}
+		glfwPollEvents();
 
+		//glfwWaitEvents();
+	}
+	cout << "window closed" << endl;
 	glfwTerminate();
 
 	return 0;

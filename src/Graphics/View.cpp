@@ -45,6 +45,7 @@ View::View(State *s) {
 
 	next_view_x = 100;
 	next_view_y = 300;
+	select = NULL;
 
 	delete graph;
 	delete terrain;
