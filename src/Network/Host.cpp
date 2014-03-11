@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <iostream>
 #include <thread>
-#include <pthread.h>
+#include <thread>
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
@@ -19,7 +19,7 @@ using boost::asio::ip::tcp;
 
 namespace std {
 
-void *host_thread(void *) {
+void host_thread() {
 	int random = rand();
 	ostringstream convert;
 	convert << random;
@@ -54,20 +54,12 @@ void *host_thread(void *) {
 Host::Host() {
 	cout << "start server" << endl;
 
-    //thread t1(host_thread);
+    thread t1(host_thread);
 
     //Join the thread with the main thread
     //t1.join();
 
-	pthread_t *t = new pthread_t();
-
-	//Launch a thread
-	pthread_create(t, NULL, host_thread, NULL);
-
-	//Join the thread with the main thread
-	//pthread_join(*t, NULL);
-
-    cout << "end" << endl;
+    cout << "end..." << endl;
 }
 
 Host::~Host() {
