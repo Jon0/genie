@@ -17,6 +17,8 @@
 #include "Data/Data.h"
 #include "Graphics/View.h"
 #include "Model/Tile.h"
+#include "Network/Client.h"
+#include "Network/Host.h"
 
 
 #define SCROLL 40
@@ -147,6 +149,9 @@ int main(int argc, char *argv[]) {
 	glfwSetMouseButtonCallback(window, mouse);
 
 	reshape(1300, 700);
+
+	new Host();
+	new Client();
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))

@@ -98,6 +98,8 @@ void View::scroll(int dx, int dy) {
 
 void View::click(ScreenCoord sc, int button) {
 	// calculate isometric coord
+
+	cout << button << endl;
 	IsoCoord ic = toIso(sc);
 	Tile *clicked_tile = state->getTile(ic.ne, ic.se);
 
@@ -112,7 +114,7 @@ void View::click(ScreenCoord sc, int button) {
 		}
 
 		/* button 2 issues commands to selection */
-		else if (button == 2 && select) {
+		else if (button == 1 && select) {
 			Instance *ins = atPoint(sc);
 			select->stopTask();
 			if (ins) {
