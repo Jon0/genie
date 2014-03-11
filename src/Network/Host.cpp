@@ -55,6 +55,7 @@ Host::Host() {
 	cout << "start server" << endl;
 
     thread t1(host_thread);
+    t1.detach();
 
     //Join the thread with the main thread
     //t1.join();
