@@ -118,6 +118,12 @@ int main(int argc, char *argv[]) {
 	srand( time(NULL) );
 	//Data *data = new Data();
 
+	if (argc == 1) {
+		Host *h = new Host();
+	}
+
+	Client *c = new Client();
+
 	/* silly place to read colours */
 	ifstream file;
 	file.open("resource/colour.dat", ios::in | ios::binary);
@@ -127,7 +133,7 @@ int main(int argc, char *argv[]) {
 		color_table[i] = (color_table[i] >> 8) | 0xff000000;
 	}
 
-	game_state = new State();
+	game_state = new State(c->value);
 	view = new View(game_state);
 	view->size_ref(&screen_size);
 	mode = 0;
@@ -149,9 +155,6 @@ int main(int argc, char *argv[]) {
 	glfwSetMouseButtonCallback(window, mouse);
 
 	reshape(1300, 700);
-
-	new Host();
-	new Client();
 
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))

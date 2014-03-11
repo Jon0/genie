@@ -21,12 +21,12 @@ class Instance;
 
 class State {
 public:
-	int edge_length;
+	int edge_length, seed;
 	vector<Tile> tile;
 	vector<Type> types;
 	list<Instance> allObj;	// cannot modify sequence
 
-	State();
+	State(int);
 	virtual ~State();
 
 	void update();

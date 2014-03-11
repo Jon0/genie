@@ -47,7 +47,7 @@ Client::Client() {
 	        break; // Connection closed cleanly by peer.
 	      else if (error)
 	        throw boost::system::system_error(error); // Some other error.
-
+	      value = atoi(buf.data());
 	      cout.write(buf.data(), len);
 	    }
 	  }

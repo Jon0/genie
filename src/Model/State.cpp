@@ -17,8 +17,9 @@
 
 namespace std {
 
-State::State() {
-	default_random_engine gen(123);
+State::State(int s) {
+	seed = s;
+	default_random_engine gen(seed);
 
 	edge_length = 100;
 
@@ -31,10 +32,10 @@ State::State() {
 
 	/* random terrain generation */
 	for (int i = 0; i < 50; ++i) {
-		int x_pos = rand() % edge_length;
-		int y_pos = rand() % edge_length;
-		int size = rand() % 50;
-		int type = rand() % 18;
+		int x_pos = gen() % edge_length;
+		int y_pos = gen() % edge_length;
+		int size = gen() % 50;
+		int type = gen() % 18;
 		for (int y = y_pos; 0 <= y && y < edge_length && y < y_pos + size;
 				++y) {
 			for (int x = x_pos;
@@ -55,8 +56,8 @@ State::State() {
 	}
 
 	/* players */
-	Player *p1 = new Player(rand() % 256, rand() % 256, rand() % 256); // 20, 40, 80
-	Player *p2 = new Player(rand() % 256, rand() % 256, rand() % 256); // 20, 40, 80
+	Player *p1 = new Player(gen() % 256, gen() % 256, gen() % 256); // 20, 40, 80
+	Player *p2 = new Player(gen() % 256, gen() % 256, gen() % 256); // 20, 40, 80
 
 	/* unit types */
 	/* unit graphics loading */
@@ -81,8 +82,8 @@ State::State() {
 		random->addAbility( new Attack( k ) );
 
 		for (int i = 0; i < 3; ++i) {
-			int x = rand() % getMapSize();
-			int y = rand() % getMapSize();
+			int x = gen() % getMapSize();
+			int y = gen() % getMapSize();
 			addObj( Instance(this, random, x, y) );
 		}
 	}
@@ -93,8 +94,8 @@ State::State() {
 		types.push_back(Type (p1, new Idle( k ), true));
 		Type *random = &types.back();
 		for (int i = 0; i < 3; ++i) {
-			int x = rand() % getMapSize();
-			int y = rand() % getMapSize();
+			int x = gen() % getMapSize();
+			int y = gen() % getMapSize();
 			addObj( Instance(this, random, x, y) );
 		}
 	}
@@ -126,23 +127,23 @@ State::State() {
 
 	// completly random objects
 	for (int i = 0; i < 10; ++i) {
-		int k = rand() % 1764;
+		int k = gen() % 1764;
 		types.push_back(Type (p2, new Dead( k+1 ), false));
 		Type *random = &types.back();
 		random->addAbility( new Idle( k+2 ) );
 		random->addAbility( new Move( k+4, 0.03 ) );
-		int x = rand() % getMapSize();
-		int y = rand() % getMapSize();
+		int x = gen() % getMapSize();
+		int y = gen() % getMapSize();
 		addObj( Instance(this, random, x, y) );
 	}
 
 	for (int i = 0; i < 20; ++i) {
-		int k = rand() % 1764;
+		int k = gen() % 1764;
 		types.push_back(Type (p2, new Idle( k ), true));
 		Type *random = &types.back();
 
-		int x = rand() % getMapSize();
-		int y = rand() % getMapSize();
+		int x = gen() % getMapSize();
+		int y = gen() % getMapSize();
 		addObj( Instance(this, random, x, y) );
 	}
 

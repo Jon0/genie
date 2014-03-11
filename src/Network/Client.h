@@ -12,6 +12,7 @@ namespace std {
 
 class Client {
 public:
+	int value;
 	Client();
 	virtual ~Client();
 };

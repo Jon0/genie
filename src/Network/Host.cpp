@@ -20,6 +20,10 @@ using boost::asio::ip::tcp;
 namespace std {
 
 void *host_thread(void *) {
+	int random = rand();
+	ostringstream convert;
+	convert << random;
+	std::string message = convert.str();
 
 	try {
 		boost::asio::io_service io_service;
@@ -36,9 +40,6 @@ void *host_thread(void *) {
 			acceptor.accept(socket);
 
 			//A client is accessing our service. Determine the current time and transfer this information to the client.
-
-			std::string message = "hello";
-
 			boost::system::error_code ignored_error;
 			boost::asio::write(socket, boost::asio::buffer(message),
 					boost::asio::transfer_all(), ignored_error);
