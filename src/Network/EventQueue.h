@@ -28,6 +28,7 @@ public:
 	EventQueue(State *);
 	virtual ~EventQueue();
 
+	void startupWait();
 	void applyAll();
 };
 

@@ -159,9 +159,9 @@ int main(int argc, char *argv[]) {
 	/*
 	 * hopefully get the initialisation
 	 */
-	eq->applyAll();
+	eq->startupWait();
 	//game_state->update();
-	//view->loadGraphics();
+	view->loadGraphics();
 
 	cout << "loaded " << endl;
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
 
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		//view->draw();
+		view->draw();
 
 		/* Swap front and back buffers */
 		glFlush();

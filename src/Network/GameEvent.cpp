@@ -23,6 +23,12 @@ GameEvent::GameEvent(string s) {
 	vector<string> tokens{istream_iterator<string>{iss},
 	         istream_iterator<string>{}};
 
+
+	if (tokens.size() == 0) {
+		cerr << "0 sized token" << endl;
+		return;
+	}
+
 	type = tokens[0];
 
 	if (type == "startup") {
@@ -38,12 +44,12 @@ GameEvent::~GameEvent() {
 }
 
 void GameEvent::apply(State *gs) {
-	cout << "apply event " << type << endl;
+	//cout << "apply event " << type << endl;
 	if (type == "startup") {
 		gs->startup(0);
 	}
 	else if (type == "tick") {
-		//gs->update();
+		gs->update();
 	}
 
 }

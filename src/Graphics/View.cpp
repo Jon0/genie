@@ -136,16 +136,11 @@ void View::loadGraphics() {
 	terrain = new DrsFile("resource/terrain.drs");
 	blend = new Blendomatic();
 
-	cout << "load t graphics" << endl;
-
 	/* terrain graphics loading */
 	terrain_type = new Resource *[18];
 	for (int i = 0; i < 18; ++i) {
-		cout << i << endl;
 		terrain_type[i] = terrain->getResource(i, false);
 	}
-
-	cout << state->getMapSize() << endl;
 
 	for (int y = 0; y < state->getMapSize(); ++y) {
 		for (int x = 0; x < state->getMapSize(); ++x) {
@@ -153,8 +148,6 @@ void View::loadGraphics() {
 			tiles.push_back(TileView(t, terrain_type, blend));
 		}
 	}
-
-	cout << "load u graphics" << endl;
 
 	/* unit graphics loading */
 	for (int i = 0; i < state->types.size(); ++i) {
@@ -165,8 +158,6 @@ void View::loadGraphics() {
 			t->ability.data()[j]->assignGraphic( graph->getResource(p, gid, !t->build) );
 		}
 	}
-
-	cout << "done" << endl;
 
 	delete graph;
 	delete terrain;

@@ -21,27 +21,21 @@ EventQueue::~EventQueue() {
 	// TODO Auto-generated destructor stub
 }
 
+void EventQueue::startupWait() {
+	cout << "waiting for startup event" << endl;
+	while (events.empty()) {}
+
+	applyAll();
+}
+
 void EventQueue::applyAll() {
-	cout << "apply all " << endl;
-
-	bool apply = true;
-
-
-
-    std::unique_lock<std::mutex> mlock(m);
-    cond.wait(mlock);
-
-	while (apply) {
-		if (!events.empty()) {
-			GameEvent event = events.front();
-			event.apply(s);
-			events.pop();
-			if (event.type == "tick") {
-				apply = false; // go draw frame
-			}
-		}
+	while (!events.empty()) {
+		std::unique_lock<std::mutex> mlock(m);
+		GameEvent event = events.front();
+		event.apply(s);
+		events.pop();
+		mlock.unlock();
 	}
-	mlock.unlock();
 }
 
 } /* namespace std */
