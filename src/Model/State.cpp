@@ -17,7 +17,16 @@
 
 namespace std {
 
-State::State(int s) {
+State::State() {
+	edge_length = 0;
+}
+
+State::~State() {
+
+}
+
+void State::startup(int s) {
+	cout << "generating map" << endl;
 	seed = s;
 	default_random_engine gen(seed);
 
@@ -147,10 +156,7 @@ State::State(int s) {
 		addObj( Instance(this, random, x, y) );
 	}
 
-}
-
-State::~State() {
-
+	cout << "completed generating map" << endl;
 }
 
 void State::update() {

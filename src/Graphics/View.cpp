@@ -15,40 +15,9 @@ namespace std {
 
 View::View(State *s) {
 	state = s;
-
-	graph = new DrsFile("resource/graphics.drs");
-	terrain = new DrsFile("resource/terrain.drs");
-	blend = new Blendomatic();
-
-	/* terrain graphics loading */
-	terrain_type = new Resource *[18];
-	for (int i = 0; i < 18; ++i) {
-		terrain_type[i] = terrain->getResource(i, false);
-	}
-
-	for (int y = 0; y < s->getMapSize(); ++y) {
-		for (int x = 0; x < s->getMapSize(); ++x) {
-			Tile *t = s->getTile(x, y);
-			tiles.push_back(TileView(t, terrain_type, blend));
-		}
-	}
-
-	/* unit graphics loading */
-	for (int i = 0; i < s->types.size(); ++i) {
-		Type *t = &s->types.data()[i];
-		Player *p = t->owner;
-		for (int j = 0; j < t->ability.size(); ++j) {
-			int gid = t->ability.data()[j]->graphic_id;
-			t->ability.data()[j]->assignGraphic( graph->getResource(p, gid, !t->build) );
-		}
-	}
-
 	next_view_x = 100;
 	next_view_y = 300;
-	select = NULL;
-
-	delete graph;
-	delete terrain;
+	loaded = false;
 }
 
 View::~View() {
@@ -106,22 +75,35 @@ void View::click(ScreenCoord sc, int button) {
 	if (0 <= ic.ne && ic.ne < state->getMapSize() && 0 <= ic.se && ic.se < state->getMapSize()) {
 
 		if (button == 0) {
-			select = atPoint(sc);
 
-			if (select) {
-				cout << "select " << select->getTask()->graphic_id << endl;
+			Instance *test = atPoint(sc);
+
+			if (test) {
+				if (select.count(test) == 0) {
+					select.insert( test );
+					cout << "select " << test->getTask()->graphic_id << endl;
+				}
+				else {
+					select.erase(test);
+				}
+			}
+			else {
+				select.clear();
 			}
 		}
 
 		/* button 2 issues commands to selection */
-		else if (button == 1 && select) {
+		else if (button == 1) {
 			Instance *ins = atPoint(sc);
-			select->stopTask();
-			if (ins) {
-				select->setTask(ins);
-			}
-			else {
-				select->setTask(new IsoCoord(ic), 0.0f);
+
+			for (unordered_set<Instance *>::iterator i = select.begin(); i != select.end(); ++i) {
+				(*i)->stopTask();
+				if (ins) {
+					(*i)->setTask(ins);
+				}
+				else {
+					(*i)->setTask(new IsoCoord(ic), 0.0f);
+				}
 			}
 		}
 	}
@@ -130,7 +112,6 @@ void View::click(ScreenCoord sc, int button) {
 void View::draw() {
 	view_x = next_view_x;
 	view_y = next_view_y;
-
 	for (int se = 0; se < state->getMapSize(); ++se) {
 		for (int ne = 0; ne < state->getMapSize(); ++ne) {
 			TileView *vt = getTile(ne, se);
@@ -144,13 +125,57 @@ void View::test() {
 }
 
 void View::debug() {
-	if (select == NULL) {
-		cout << "no selection" << endl;
+	for (unordered_set<Instance *>::iterator i = select.begin(); i != select.end(); ++i) {
+		cout << "x/y: " << (*i)->current.ne << ", " << (*i)->current.se << endl;
+		cout << "tasks " << (*i)->task.size() << endl;
 	}
-	else {
-		cout << "x/y: " << select->current.ne << ", " << select->current.se << endl;
-		cout << "tasks " << select->task.size() << endl;
+}
+
+void View::loadGraphics() {
+	graph = new DrsFile("resource/graphics.drs");
+	terrain = new DrsFile("resource/terrain.drs");
+	blend = new Blendomatic();
+
+	cout << "load t graphics" << endl;
+
+	/* terrain graphics loading */
+	terrain_type = new Resource *[18];
+	for (int i = 0; i < 18; ++i) {
+		cout << i << endl;
+		terrain_type[i] = terrain->getResource(i, false);
 	}
+
+	cout << state->getMapSize() << endl;
+
+	for (int y = 0; y < state->getMapSize(); ++y) {
+		for (int x = 0; x < state->getMapSize(); ++x) {
+			Tile *t = state->getTile(x, y);
+			tiles.push_back(TileView(t, terrain_type, blend));
+		}
+	}
+
+	cout << "load u graphics" << endl;
+
+	/* unit graphics loading */
+	for (int i = 0; i < state->types.size(); ++i) {
+		Type *t = &state->types.data()[i];
+		Player *p = t->owner;
+		for (int j = 0; j < t->ability.size(); ++j) {
+			int gid = t->ability.data()[j]->graphic_id;
+			t->ability.data()[j]->assignGraphic( graph->getResource(p, gid, !t->build) );
+		}
+	}
+
+	cout << "done" << endl;
+
+	delete graph;
+	delete terrain;
+
+	loaded = true;
+}
+
+void View::setClient(Client *c) {
+	client = c;
 }
 
 } /* namespace std */

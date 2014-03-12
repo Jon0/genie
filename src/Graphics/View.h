@@ -8,6 +8,7 @@
 #ifndef VIEW_H_
 #define VIEW_H_
 
+#include <unordered_set>
 #include <vector>
 
 #include "../def.h"
@@ -19,6 +20,7 @@
 
 namespace std {
 
+class Client;
 class State;
 class Instance;
 class Type;
@@ -34,9 +36,14 @@ class View {
 
 	Type *arch, *knt, *cannon, *fireball;
 	int next_view_x, next_view_y;
+	bool loaded;
+
+	Client *client;
 
 public:
-	Instance *select;
+	unordered_set<Instance *> select;
+
+
 	int view_x, view_y;
 	ScreenCoord *screen_size;
 
@@ -53,6 +60,9 @@ public:
 	void draw();
 	void test();
 	void debug();
+	void loadGraphics();
+	void setClient(Client *);
+
 };
 
 } /* namespace std */

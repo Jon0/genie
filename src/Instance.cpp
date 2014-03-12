@@ -29,10 +29,6 @@ Instance::Instance(State *state, Type *t, float xi, float yi) {
 	frame = 0;
 	on = state->getTile( (int)xi, (int)yi );
 
-	//task_arg ta;
-	//ta.ability = type->ability.data()[0];
-	//task.push_back(ta);
-
 	setTask(NULL);
 }
 

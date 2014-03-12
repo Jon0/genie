@@ -7,59 +7,88 @@
 
 
 #include <iostream>
+#include <thread>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 
 #include "Client.h"
+#include "EventQueue.h"
+#include "GameEvent.h"
 
 using boost::asio::ip::tcp;
 
 namespace std {
 
-Client::Client() {
-	try
-	  {
-	    boost::asio::io_service io_service;
+void client_thread(Client *c) {
 
-	    tcp::resolver resolver(io_service);
-	    tcp::resolver::query query("localhost", "6564");
-	    tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-	    tcp::resolver::iterator end;
+	try {
+		boost::asio::io_service io_service;
 
-	    tcp::socket socket(io_service);
-	    boost::system::error_code error = boost::asio::error::host_not_found;
-	    while (error && endpoint_iterator != end)
-	    {
-	      socket.close();
-	      socket.connect(*endpoint_iterator++, error);
-	    }
-	    if (error)
-	      throw boost::system::system_error(error);
+		tcp::resolver resolver(io_service);
+		tcp::resolver::query query("localhost", "6564");
+		tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+		tcp::resolver::iterator end;
+
+		tcp::socket socket(io_service);
+		boost::system::error_code error = boost::asio::error::host_not_found;
+		while (error && endpoint_iterator != end) {
+			socket.close();
+			socket.connect(*endpoint_iterator++, error);
+		}
+		if (error)
+			throw boost::system::system_error(error);
 
 	    for (;;)
 	    {
-	      boost::array<char, 128> buf;
-	      boost::system::error_code error;
+	      //boost::array<char, 128> buf;
+	    	boost::asio::streambuf buffer;
+	    	boost::system::error_code error;
 
-	      size_t len = socket.read_some(boost::asio::buffer(buf), error);
+	      size_t len = read_until(socket, buffer, "\n", error);
 
 	      if (error == boost::asio::error::eof)
 	        break; // Connection closed cleanly by peer.
 	      else if (error)
 	        throw boost::system::system_error(error); // Some other error.
-	      value = atoi(buf.data());
-	      cout.write(buf.data(), len);
-	    }
-	  }
-	  catch (std::exception& e)
-	  {
-	    cerr << e.what() << endl;
-	  }
 
+	      istream str(&buffer);
+	      string s;
+	      getline(str, s);
+
+	      std::unique_lock<std::mutex> mlock(c->event_queue->m);
+	      c->event_queue->events.push(GameEvent(s));
+	      mlock.unlock();     // unlock before notificiation to minimize mutex contention
+	      c->event_queue->cond.notify_one();
+
+
+	      //cout.write(s.c_str(), len);
+	    }
+
+
+	} catch (std::exception& e) {
+		cerr << e.what() << endl;
+	}
+
+}
+
+Client::Client(EventQueue *eq) {
+	event_queue = eq;
+
+	cout << "start client" << endl;
+
+    thread t1(client_thread, this);
+    t1.detach();
 }
 
 Client::~Client() {
 	// TODO Auto-generated destructor stub
+}
+
+/*
+ * return message to host
+ */
+void Client::toHost(GameEvent) {
+
 }
 
 } /* namespace std */

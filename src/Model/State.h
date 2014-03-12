@@ -26,9 +26,10 @@ public:
 	vector<Type> types;
 	list<Instance> allObj;	// cannot modify sequence
 
-	State(int);
+	State();
 	virtual ~State();
 
+	void startup(int);
 	void update();
 	void addObj(Instance);
 	Tile *getTile(int, int);

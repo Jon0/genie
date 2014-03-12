@@ -8,7 +8,6 @@
 #include <stdlib.h>
 #include <iostream>
 #include <thread>
-#include <thread>
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
@@ -19,11 +18,27 @@ using boost::asio::ip::tcp;
 
 namespace std {
 
-void host_thread() {
+
+void start_connection(tcp::socket &socket) {
 	int random = rand();
 	ostringstream convert;
 	convert << random;
-	std::string message = convert.str();
+	string message = "startup "+convert.str()+"\n";
+	string message2 = "tick\n";
+
+	//A client is accessing our service. Determine the current time and transfer this information to the client.
+	boost::system::error_code ignored_error;
+	boost::asio::write(socket, boost::asio::buffer(message),
+			boost::asio::transfer_all(), ignored_error);
+
+	for (;;) {
+		boost::asio::write(socket, boost::asio::buffer(message2),
+				boost::asio::transfer_all(), ignored_error);
+	}
+}
+
+void host_thread(Host *host) {
+
 
 	try {
 		boost::asio::io_service io_service;
@@ -35,14 +50,10 @@ void host_thread() {
 		//This is an iterative server, which means that it will handle one connection at a time. Create a socket that will represent the connection to the client, and then wait for a connection.
 
 		for (;;) {
-			cout << "dfgdf" << endl;
 			tcp::socket socket(io_service);
 			acceptor.accept(socket);
 
-			//A client is accessing our service. Determine the current time and transfer this information to the client.
-			boost::system::error_code ignored_error;
-			boost::asio::write(socket, boost::asio::buffer(message),
-					boost::asio::transfer_all(), ignored_error);
+			start_connection(socket);
 		}
 	}
 	//Finally, handle any exceptions.
@@ -54,13 +65,11 @@ void host_thread() {
 Host::Host() {
 	cout << "start server" << endl;
 
-    thread t1(host_thread);
+    thread t1(host_thread, this);
     t1.detach();
 
     //Join the thread with the main thread
     //t1.join();
-
-    cout << "end..." << endl;
 }
 
 Host::~Host() {

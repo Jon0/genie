@@ -10,11 +10,16 @@
 
 namespace std {
 
+class EventQueue;
+class GameEvent;
+
 class Client {
 public:
-	int value;
-	Client();
+	EventQueue *event_queue;
+	Client(EventQueue *);
 	virtual ~Client();
+
+	void toHost(GameEvent);
 };
 
 } /* namespace std */

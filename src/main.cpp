@@ -17,9 +17,9 @@
 #include "Data/Data.h"
 #include "Graphics/View.h"
 #include "Model/Tile.h"
+#include "Network/EventQueue.h"
 #include "Network/Client.h"
 #include "Network/Host.h"
-
 
 #define SCROLL 40
 
@@ -27,6 +27,7 @@ using namespace std;
 
 GLuint g_mainWnd;
 State *game_state;
+EventQueue *eq;
 View *view;
 int color_table[256];
 
@@ -92,9 +93,7 @@ void reshape(int w, int h) {
 }
 
 void drawCallback() {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	game_state->update();
-	view->draw();
+
 }
 
 void idle() {
@@ -118,11 +117,12 @@ int main(int argc, char *argv[]) {
 	srand( time(NULL) );
 	//Data *data = new Data();
 
+	game_state = new State();
+	eq = new EventQueue(game_state);
+
 	if (argc == 1) {
 		Host *h = new Host();
 	}
-
-	Client *c = new Client();
 
 	/* silly place to read colours */
 	ifstream file;
@@ -133,9 +133,9 @@ int main(int argc, char *argv[]) {
 		color_table[i] = (color_table[i] >> 8) | 0xff000000;
 	}
 
-	game_state = new State(c->value);
 	view = new View(game_state);
 	view->size_ref(&screen_size);
+	view->setClient( new Client(eq) );
 	mode = 0;
 
 	glEnable( GL_TEXTURE_RECTANGLE_NV );
@@ -156,11 +156,24 @@ int main(int argc, char *argv[]) {
 
 	reshape(1300, 700);
 
+	/*
+	 * hopefully get the initialisation
+	 */
+	eq->applyAll();
+	//game_state->update();
+	//view->loadGraphics();
+
+	cout << "loaded " << endl;
+
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
+		eq->applyAll();
+		//game_state->update();
+
 		/* Render here */
-		drawCallback();
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		//view->draw();
 
 		/* Swap front and back buffers */
 		glFlush();

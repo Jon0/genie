@@ -69,7 +69,7 @@ void TileView::draw(View *v) {
 			ScreenCoord sc = v->toScreen(obj->getIso());
 			obj->draw(sc);
 
-			if (obj == v->select) {
+			if (v->select.count(obj) > 0) {
 				obj->type->circle.draw(sc.x, sc.y, 0);
 			}
 		}
