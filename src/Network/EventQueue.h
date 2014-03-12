@@ -23,7 +23,6 @@ public:
 	State *s;
 	queue<GameEvent> events;
 	mutex m;
-	condition_variable cond;
 
 	EventQueue(State *);
 	virtual ~EventQueue();

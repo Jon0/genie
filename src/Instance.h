@@ -29,6 +29,7 @@ struct task_arg {
  */
 class Instance {
 public:
+	int state_id;
 	State *gs;
 	Type *type;
 	vector<task_arg> task;	// stack of tasks to complete

@@ -38,8 +38,6 @@ class View {
 	int next_view_x, next_view_y;
 	bool loaded;
 
-	Client *client;
-
 public:
 	unordered_set<Instance *> select;
 
@@ -61,8 +59,6 @@ public:
 	void test();
 	void debug();
 	void loadGraphics();
-	void setClient(Client *);
-
 };
 
 } /* namespace std */

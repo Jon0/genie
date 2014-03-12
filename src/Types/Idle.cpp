@@ -14,7 +14,7 @@ Idle::Idle(int gid) {
 	graphic_id = gid;
 	image = NULL;
 	group_size = 0;
-	inc_rate = 0.3;
+	inc_rate = 0.5;
 }
 
 void Idle::assignGraphic(Resource *res) {

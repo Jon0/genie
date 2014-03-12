@@ -8,6 +8,11 @@
 #ifndef CLIENT_H_
 #define CLIENT_H_
 
+#include <boost/array.hpp>
+#include <boost/asio.hpp>
+
+using boost::asio::ip::tcp;
+
 namespace std {
 
 class EventQueue;
@@ -15,11 +20,12 @@ class GameEvent;
 
 class Client {
 public:
+	tcp::socket *socket;
 	EventQueue *event_queue;
 	Client(EventQueue *);
 	virtual ~Client();
 
-	void toHost(GameEvent);
+	void toHost(string);
 };
 
 } /* namespace std */

@@ -22,6 +22,7 @@ Instance::Instance(State *state, Type *t, float xi, float yi) {
 	gs = state;
 	type = t;
 
+	state_id = state->getNextID();
 	current.ne = xi;
 	current.se = yi;
 	direction = 0;

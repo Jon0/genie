@@ -10,12 +10,24 @@
 
 #include <string>
 
+#include "../def.h"
+
 namespace std {
 
 class State;
 
 struct startup_event {
 	int seed;
+};
+
+struct move_event {
+	int instance;
+	IsoCoord loc;
+};
+
+struct interact_event {
+	int instance_a;
+	int instance_b;
 };
 
 class GameEvent {

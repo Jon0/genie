@@ -117,14 +117,15 @@ int main(int argc, char *argv[]) {
 	srand( time(NULL) );
 	//Data *data = new Data();
 
-	game_state = new State();
-	eq = new EventQueue(game_state);
-
 	if (argc == 1) {
 		Host *h = new Host();
 	}
 
-	/* silly place to read colours */
+	game_state = new State();
+	eq = new EventQueue(game_state);
+	game_state->setClient( new Client(eq) );
+
+	/* silly place to read colours before creating view */
 	ifstream file;
 	file.open("resource/colour.dat", ios::in | ios::binary);
 	file.read((char *)&color_table, 1024);
@@ -135,8 +136,6 @@ int main(int argc, char *argv[]) {
 
 	view = new View(game_state);
 	view->size_ref(&screen_size);
-	view->setClient( new Client(eq) );
-	mode = 0;
 
 	glEnable( GL_TEXTURE_RECTANGLE_NV );
 
@@ -160,7 +159,6 @@ int main(int argc, char *argv[]) {
 	 * hopefully get the initialisation
 	 */
 	eq->startupWait();
-	//game_state->update();
 	view->loadGraphics();
 
 	cout << "loaded " << endl;
@@ -169,7 +167,6 @@ int main(int argc, char *argv[]) {
 	while (!glfwWindowShouldClose(window))
 	{
 		eq->applyAll();
-		//game_state->update();
 
 		/* Render here */
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

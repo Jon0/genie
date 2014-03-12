@@ -11,6 +11,7 @@
 #include "../Types/Idle.h"
 #include "../Types/Move.h"
 #include "../Types/Attack.h"
+#include "../Network/Client.h"
 #include "../Instance.h"
 #include "Player.h"
 #include "State.h"
@@ -19,6 +20,8 @@ namespace std {
 
 State::State() {
 	edge_length = 0;
+	next_id = 0;
+	seed = 0;
 }
 
 State::~State() {
@@ -87,7 +90,7 @@ void State::startup(int s) {
 		types.push_back(Type (p1, new Dead( k+1 ), false));
 		Type *random = &types.back();
 		random->addAbility( new Idle( k+2 ) );
-		random->addAbility( new Move( k+4, 0.03 ) );
+		random->addAbility( new Move( k+4, 0.08 ) );
 		random->addAbility( new Attack( k ) );
 
 		for (int i = 0; i < 3; ++i) {
@@ -113,20 +116,20 @@ void State::startup(int s) {
 	types.push_back( Type(p1, new Dead( 0 + 1 ), false) );
 	Type *arch = &types.back();
 	arch->addAbility( new Idle( 0+2 ) );
-	arch->addAbility( new Move( 0+4, 0.03 ) );
+	arch->addAbility( new Move( 0+4, 0.08 ) );
 	arch->addAbility( new Attack( 0 ) );
 
 
 	types.push_back(Type (p1, new Dead( 16 + 1 ), false));
 	Type *cannon = &types.back();
 	cannon->addAbility( new Idle( 16+2 ) );
-	cannon->addAbility( new Move( 16+4, 0.02 ) );
+	cannon->addAbility( new Move( 16+4, 0.06 ) );
 	cannon->addAbility( new Attack( 16 ) );
 
 	types.push_back(Type (p1, new Dead( 104 + 1 ), false));
 	Type *knt = &types.back();
 	knt->addAbility( new Idle( 104+2 ) );
-	knt->addAbility( new Move( 104+4, 0.07 ) );
+	knt->addAbility( new Move( 104+4, 0.12 ) );
 	knt->addAbility( new Attack( 104 ) );
 
 	addObj( Instance(this, arch, 1, 1) );
@@ -140,7 +143,7 @@ void State::startup(int s) {
 		types.push_back(Type (p2, new Dead( k+1 ), false));
 		Type *random = &types.back();
 		random->addAbility( new Idle( k+2 ) );
-		random->addAbility( new Move( k+4, 0.03 ) );
+		random->addAbility( new Move( k+4, 0.08 ) );
 		int x = gen() % getMapSize();
 		int y = gen() % getMapSize();
 		addObj( Instance(this, random, x, y) );
@@ -157,6 +160,10 @@ void State::startup(int s) {
 	}
 
 	cout << "completed generating map" << endl;
+}
+
+void State::setClient(Client *c) {
+	client = c;
 }
 
 void State::update() {
@@ -195,6 +202,32 @@ Tile *State::getTile(Pointi p) {
 
 int State::getMapSize() {
 	return edge_length;
+}
+
+int State::getNextID() {
+	int i = next_id;
+	++next_id;
+	return i;
+}
+
+void State::issueCommand(Instance *a, Instance *b) {
+	client->toHost("interact "+to_string(a->state_id)+" "+to_string(b->state_id));
+}
+
+void State::issueCommand(Instance *i, IsoCoord ic) {
+	client->toHost("move "+to_string(i->state_id)+" "+to_string(ic.ne)+" "+to_string(ic.se));
+}
+
+Instance *State::fromID(int id) {
+	for (list<Instance>::iterator i = allObj.begin(); i != allObj.end(); ++i) {
+		if ( (*i).state_id == id ) {
+			return &(*i);
+		}
+	}
+
+
+
+	return NULL;
 }
 
 } /* namespace std */

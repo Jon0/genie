@@ -97,12 +97,14 @@ void View::click(ScreenCoord sc, int button) {
 			Instance *ins = atPoint(sc);
 
 			for (unordered_set<Instance *>::iterator i = select.begin(); i != select.end(); ++i) {
-				(*i)->stopTask();
 				if (ins) {
-					(*i)->setTask(ins);
+					//(*i)->setTask(ins);
+
+					state->issueCommand((*i), ins);
 				}
 				else {
-					(*i)->setTask(new IsoCoord(ic), 0.0f);
+					//(*i)->setTask(new IsoCoord(ic), 0.0f);
+					state->issueCommand((*i), ic);
 				}
 			}
 		}
@@ -163,10 +165,6 @@ void View::loadGraphics() {
 	delete terrain;
 
 	loaded = true;
-}
-
-void View::setClient(Client *c) {
-	client = c;
 }
 
 } /* namespace std */

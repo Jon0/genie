@@ -19,6 +19,8 @@ using boost::asio::ip::tcp;
 
 namespace std {
 
+boost::system::error_code ignored_error;
+
 void host_thread(Host *host) {
 	int random = rand();
 	ostringstream convert;
@@ -42,7 +44,6 @@ void host_thread(Host *host) {
 			cout << "new connection" << endl;
 
 			//A client is accessing our service. Determine the current time and transfer this information to the client.
-			boost::system::error_code ignored_error;
 			boost::asio::write(*socket, boost::asio::buffer(message),
 					boost::asio::transfer_all(), ignored_error);
 
@@ -59,11 +60,44 @@ void broadcast_thread(Host *host) {
 	string message = "tick\n";
 
 	for (;;) {
-
-		//cout << host->connections.size() << " connections " << endl;
-
+		// recieve from clients
 		for (list<tcp::socket *>::iterator i = host->connections.begin(); i != host->connections.end(); ++i) {
-			boost::system::error_code ignored_error;
+			boost::asio::streambuf buffer;
+			boost::system::error_code error;
+
+			size_t a = (*i)->available();
+			if (a) {
+				size_t len = read_until(*(*i), buffer, "\n", error);
+
+				if (error == boost::asio::error::eof)
+					break; // Connection closed cleanly by peer.
+				else if (error)
+					throw boost::system::system_error(error); // Some other error.
+
+				istream str(&buffer);
+				string s;
+				getline(str, s);
+				host->broadcast(s);
+			}
+		}
+
+		// process message queue
+		std::unique_lock<std::mutex> mlock(host->queue_mutex);
+		while ( !host->broadcast_queue.empty() ) {
+			string next = host->broadcast_queue.front();
+			host->broadcast_queue.pop();
+
+			// send to all
+			for (list<tcp::socket *>::iterator i = host->connections.begin(); i != host->connections.end(); ++i) {
+				boost::asio::write(*(*i), boost::asio::buffer(next),
+						boost::asio::transfer_all(), ignored_error);
+
+			}
+		}
+		mlock.unlock();
+
+		// send tick to all
+		for (list<tcp::socket *>::iterator i = host->connections.begin(); i != host->connections.end(); ++i) {
 			boost::asio::write(*(*i), boost::asio::buffer(message),
 					boost::asio::transfer_all(), ignored_error);
 
@@ -82,9 +116,6 @@ Host::Host() {
 
     thread bc(broadcast_thread, this);
     bc.detach();
-
-    //Join the thread with the main thread
-    //t1.join();
 }
 
 Host::~Host() {
@@ -92,7 +123,9 @@ Host::~Host() {
 }
 
 void Host::broadcast(string s) {
+	std::unique_lock<std::mutex> mlock(queue_mutex);
 	broadcast_queue.push(s + "\n");
+	mlock.unlock();
 }
 
 } /* namespace std */

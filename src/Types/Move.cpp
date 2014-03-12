@@ -91,7 +91,7 @@ bool Move::update(Instance *i, void *arg) {
 		i->on->addObj(i);
 	}
 
-	i->frame += 0.5;
+	i->frame += 0.8;
 	return complete;
 }
 

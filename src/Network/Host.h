@@ -11,6 +11,7 @@
 #include <list>
 #include <string>
 #include <queue>
+#include <mutex>
 
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
@@ -19,6 +20,7 @@ namespace std {
 
 class Host {
 public:
+	mutex queue_mutex;
 	queue<string> broadcast_queue;
 	list<boost::asio::ip::tcp::socket *> connections;
 

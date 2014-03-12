@@ -22,29 +22,12 @@ namespace std {
 void client_thread(Client *c) {
 
 	try {
-		boost::asio::io_service io_service;
-
-		tcp::resolver resolver(io_service);
-		tcp::resolver::query query("localhost", "6564");
-		tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
-		tcp::resolver::iterator end;
-
-		tcp::socket socket(io_service);
-		boost::system::error_code error = boost::asio::error::host_not_found;
-		while (error && endpoint_iterator != end) {
-			socket.close();
-			socket.connect(*endpoint_iterator++, error);
-		}
-		if (error)
-			throw boost::system::system_error(error);
-
 	    for (;;)
 	    {
-	      //boost::array<char, 128> buf;
 	    	boost::asio::streambuf buffer;
 	    	boost::system::error_code error;
 
-	      size_t len = read_until(socket, buffer, "\n", error);
+	      size_t len = read_until(*(c->socket), buffer, "\n", error);
 
 	      if (error == boost::asio::error::eof)
 	        break; // Connection closed cleanly by peer.
@@ -70,11 +53,32 @@ void client_thread(Client *c) {
 
 Client::Client(EventQueue *eq) {
 	event_queue = eq;
+	try {
+		boost::asio::io_service io_service;
 
-	cout << "start client" << endl;
+		tcp::resolver resolver(io_service);
+		tcp::resolver::query query("localhost", "6564");
+		tcp::resolver::iterator endpoint_iterator = resolver.resolve(query);
+		tcp::resolver::iterator end;
 
-    thread t1(client_thread, this);
-    t1.detach();
+		socket = new tcp::socket(io_service);
+		boost::system::error_code error = boost::asio::error::host_not_found;
+		while (error && endpoint_iterator != end) {
+			socket->close();
+			socket->connect(*endpoint_iterator++, error);
+		}
+		if (error)
+			throw boost::system::system_error(error);
+
+		cout << "start client thread" << endl;
+	    thread t1(client_thread, this);
+	    t1.detach();
+
+	} catch (std::exception& e) {
+		cerr << e.what() << endl;
+	}
+
+	cout << socket << endl;
 }
 
 Client::~Client() {
@@ -84,8 +88,10 @@ Client::~Client() {
 /*
  * return message to host
  */
-void Client::toHost(GameEvent) {
-
+void Client::toHost(string message) {
+	boost::system::error_code ignored_error_a;
+	boost::asio::write(*socket, boost::asio::buffer(message+"\n"),
+			boost::asio::transfer_all(), ignored_error_a);
 }
 
 } /* namespace std */
