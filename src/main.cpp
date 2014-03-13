@@ -123,7 +123,13 @@ int main(int argc, char *argv[]) {
 
 	game_state = new State();
 	eq = new EventQueue(game_state);
-	game_state->setClient( new Client(eq) );
+
+	if (argc == 1) {
+		game_state->setClient(new Client(eq));
+	}
+	else {
+		game_state->setClient(new Client(eq, argv[1]));
+	}
 
 	/* silly place to read colours before creating view */
 	ifstream file;

@@ -20,8 +20,10 @@ class GameEvent;
 
 class Client {
 public:
-	tcp::socket *socket;
+	boost::asio::io_service io_service;
+	tcp::socket tcp_socket;
 	EventQueue *event_queue;
+	Client(EventQueue *, const char *);
 	Client(EventQueue *);
 	virtual ~Client();
 

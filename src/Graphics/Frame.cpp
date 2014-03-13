@@ -38,11 +38,11 @@ Frame::Frame(Player *player, unsigned char *data, int index, bool m) {
 	/* fill each line from commands */
 	for (int y = 0; y < head->height; ++y) {
 		if ( outline[2*y] >= 1000 ) {
-			cout << "skip?" << endl;
+			//cout << "skip?" << endl;
 		}
 		int f = readCommand(outline[2*y], y, &data[command[y]]);
 		if ( f + outline[2*y + 1] != head->width ) {
-			cout << "frame error" << endl;
+			//cout << "frame error" << endl;
 			break;
 		}
 	}	// end height

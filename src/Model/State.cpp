@@ -29,7 +29,7 @@ State::~State() {
 }
 
 void State::startup(int s) {
-	cout << "generating map" << endl;
+	cout << "generating map (" << s << ")" << endl;
 	seed = s;
 	default_random_engine gen(seed);
 
