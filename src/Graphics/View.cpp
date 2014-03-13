@@ -92,8 +92,8 @@ void View::click(ScreenCoord sc, ScreenCoord down, int button) {
 				lowy = down.y;
 			}
 
-			for (int x = lowx; x < highx; ++x) {
-				for (int y = lowy; y < highy; ++y) {
+			for (int x = lowx; x <= highx; ++x) {
+				for (int y = lowy; y <= highy; ++y) {
 					ScreenCoord sci;
 					sci.x = x;
 					sci.y = y;
