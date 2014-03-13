@@ -77,8 +77,9 @@ void broadcast_thread(Host *host) {
 
 				istream str(&buffer);
 				string s;
-				getline(str, s);
-				host->broadcast(s);
+				while (getline(str, s)) {
+					host->broadcast(s);
+				}
 			}
 		}
 
