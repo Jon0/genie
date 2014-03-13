@@ -35,6 +35,8 @@ void EventQueue::applyAll() {
 		event.apply(s);
 		events.pop();
 		mlock.unlock();
+
+		if (event.type == "tick") break; // need to render
 	}
 }
 
