@@ -56,7 +56,7 @@ bool Attack::update(Instance *i, void *arg) {
 	}
 
 
-	i->frame += 0.3;
+	i->frame += 0.6;
 	return false;
 }
 

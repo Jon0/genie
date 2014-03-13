@@ -25,28 +25,53 @@
 
 using namespace std;
 
-GLuint g_mainWnd;
+GLFWwindow* window;
 State *game_state;
 EventQueue *eq;
 View *view;
 int color_table[256];
 
 ScreenCoord mouseCoord;
-int mode;
+bool minimise;
 
 ScreenCoord screen_size;
 
+void keyboard(GLFWwindow *, int key, int scancode, int action, int mods);
+void mouse(GLFWwindow *, int button, int action, int mods);
+void mousePos(GLFWwindow *, double x, double y);
+void reshape(GLFWwindow *, int w, int h);
+
 void error_callback(int error, const char* description) {
 	cerr << description << endl;
+}
+
+void setupWindow() {
+	minimise = false;
+
+	/* Make the window's context current */
+	glfwMakeContextCurrent(window);
+	glfwSetKeyCallback(window, keyboard);
+	glfwSetCursorPosCallback(window, mousePos);
+	glfwSetMouseButtonCallback(window, mouse);
+	glfwSetWindowSizeCallback(window, reshape);
+	reshape(window, 800, 600);
+
+	glEnable( GL_TEXTURE_RECTANGLE_NV );
+
+	glEnable( GL_DEPTH_TEST );
+
+	glEnable( GL_BLEND );
+	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
+
+	glEnable( GL_ALPHA_TEST );
+	glAlphaFunc( GL_GREATER, 0.1 );
+
 }
 
 void keyboard(GLFWwindow *, int key, int scancode, int action, int mods) {
 	switch (key) {
 	case GLFW_KEY_Q:
 		view->debug();
-		break;
-	case GLFW_KEY_P:
-		mode = 1;
 		break;
 	case GLFW_KEY_Y:
 		view->scroll(0, -SCROLL);
@@ -61,11 +86,12 @@ void keyboard(GLFWwindow *, int key, int scancode, int action, int mods) {
 		view->scroll(-SCROLL, 0);
 		break;
 	case '.':
-		//glutFullScreen();
+		minimise = true;
 		break;
-	case ',':
-		//glutReshapeWindow(800, 600);
-		//glutPositionWindow(0,0);
+	case GLFW_KEY_ESCAPE:
+		glfwDestroyWindow(window);
+		//window = glfwCreateWindow(800, 600, "Test", NULL, NULL);
+		//setupWindow();
 		break;
 	}
 }
@@ -80,7 +106,7 @@ void mousePos(GLFWwindow *, double x, double y) {
 	mouseCoord.y = screen_size.y - y;
 }
 
-void reshape(int w, int h) {
+void reshape(GLFWwindow *, int w, int h) {
 	screen_size.x = w;
 	screen_size.y = h;
 	glViewport(0, 0, w, h);
@@ -92,21 +118,14 @@ void reshape(int w, int h) {
 	glLoadIdentity();
 }
 
-void drawCallback() {
-
-}
-
-void idle() {
-	//glutPostRedisplay();
-}
-
 int main(int argc, char *argv[]) {
 	if (!glfwInit()) exit(EXIT_FAILURE);
 
 	glfwSetErrorCallback(error_callback);
 
-	GLFWwindow* window = glfwCreateWindow(1300, 700, "Test", NULL, NULL);
-	glfwMakeContextCurrent(window);
+	const GLFWvidmode *desktop = glfwGetVideoMode( glfwGetPrimaryMonitor() );
+	window = glfwCreateWindow(desktop->width, desktop->height, "Test", glfwGetPrimaryMonitor(), NULL);
+	setupWindow();
 
 	// Initialize GLEW
 	if (glewInit() != GLEW_OK) {
@@ -143,24 +162,6 @@ int main(int argc, char *argv[]) {
 	view = new View(game_state);
 	view->size_ref(&screen_size);
 
-	glEnable( GL_TEXTURE_RECTANGLE_NV );
-
-	glEnable( GL_DEPTH_TEST );
-
-	glEnable( GL_BLEND );
-	glBlendFunc( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA );
-
-	glEnable( GL_ALPHA_TEST );
-	glAlphaFunc( GL_GREATER, 0.1 );
-
-	/* Make the window's context current */
-	glfwMakeContextCurrent(window);
-	glfwSetKeyCallback(window, keyboard);
-	glfwSetCursorPosCallback(window, mousePos);
-	glfwSetMouseButtonCallback(window, mouse);
-
-	reshape(1300, 700);
-
 	/*
 	 * hopefully get the initialisation
 	 */
@@ -172,6 +173,14 @@ int main(int argc, char *argv[]) {
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
+		if (minimise) {
+			glfwDestroyWindow(window);
+			window = glfwCreateWindow(800, 600, "Test", NULL, NULL);
+			setupWindow();
+			view->loadGraphics();
+			minimise = false;
+		}
+
 		eq->applyAll();
 
 		/* Render here */
@@ -186,10 +195,10 @@ int main(int argc, char *argv[]) {
 		glfwPollEvents();
 
 		//glfwWaitEvents();
+
 	}
 	cout << "window closed" << endl;
 	glfwTerminate();
-
 	return 0;
 }
 
