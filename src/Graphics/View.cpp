@@ -144,6 +144,7 @@ void View::loadGraphics() {
 		terrain_type[i] = terrain->getResource(i, false);
 	}
 
+	tiles.clear();
 	for (int y = 0; y < state->getMapSize(); ++y) {
 		for (int x = 0; x < state->getMapSize(); ++x) {
 			Tile *t = state->getTile(x, y);

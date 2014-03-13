@@ -25,14 +25,14 @@
 
 using namespace std;
 
-GLFWwindow* window;
+GLFWwindow* window = NULL;
 State *game_state;
 EventQueue *eq;
 View *view;
 int color_table[256];
 
 ScreenCoord mouseCoord;
-bool minimise;
+bool minimise, fullscreen;
 
 ScreenCoord screen_size;
 
@@ -45,8 +45,24 @@ void error_callback(int error, const char* description) {
 	cerr << description << endl;
 }
 
-void setupWindow() {
+void setupWindow(bool fs) {
 	minimise = false;
+	fullscreen = fs;
+	if (window) glfwDestroyWindow(window);
+
+	// fullscreen
+	int w, h;
+	if (fs) {
+		const GLFWvidmode *desktop = glfwGetVideoMode(glfwGetPrimaryMonitor());
+		w = desktop->width;
+		h = desktop->height;
+		window = glfwCreateWindow(w, h, "Test", glfwGetPrimaryMonitor(), NULL);
+	}
+	else {
+		w = 1300;
+		h = 700;
+		window = glfwCreateWindow(w, h, "Test", NULL, NULL);
+	}
 
 	/* Make the window's context current */
 	glfwMakeContextCurrent(window);
@@ -54,7 +70,7 @@ void setupWindow() {
 	glfwSetCursorPosCallback(window, mousePos);
 	glfwSetMouseButtonCallback(window, mouse);
 	glfwSetWindowSizeCallback(window, reshape);
-	reshape(window, 800, 600);
+	reshape(window, w, h);
 
 	glEnable( GL_TEXTURE_RECTANGLE_NV );
 
@@ -90,8 +106,6 @@ void keyboard(GLFWwindow *, int key, int scancode, int action, int mods) {
 		break;
 	case GLFW_KEY_ESCAPE:
 		glfwDestroyWindow(window);
-		//window = glfwCreateWindow(800, 600, "Test", NULL, NULL);
-		//setupWindow();
 		break;
 	}
 }
@@ -123,9 +137,7 @@ int main(int argc, char *argv[]) {
 
 	glfwSetErrorCallback(error_callback);
 
-	const GLFWvidmode *desktop = glfwGetVideoMode( glfwGetPrimaryMonitor() );
-	window = glfwCreateWindow(desktop->width, desktop->height, "Test", glfwGetPrimaryMonitor(), NULL);
-	setupWindow();
+	setupWindow(false);
 
 	// Initialize GLEW
 	if (glewInit() != GLEW_OK) {
@@ -173,10 +185,9 @@ int main(int argc, char *argv[]) {
 	/* Loop until the user closes the window */
 	while (!glfwWindowShouldClose(window))
 	{
+		// toggle between window and fullscreen
 		if (minimise) {
-			glfwDestroyWindow(window);
-			window = glfwCreateWindow(800, 600, "Test", NULL, NULL);
-			setupWindow();
+			setupWindow(!fullscreen); 
 			view->loadGraphics();
 			minimise = false;
 		}
