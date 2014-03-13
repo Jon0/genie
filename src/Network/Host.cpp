@@ -57,8 +57,8 @@ void host_thread(Host *host) {
 }
 
 void broadcast_thread(Host *host) {
-	string message = "tick";
-	int tick_count = 0;
+	string message = "tick\n";
+	//int tick_count = 0;
 
 	for (;;) {
 		// recieve from clients
@@ -99,13 +99,13 @@ void broadcast_thread(Host *host) {
 
 		// send tick to all
 		for (list<tcp::socket *>::iterator i = host->connections.begin(); i != host->connections.end(); ++i) {
-			boost::asio::write(*(*i), boost::asio::buffer(message+" "+to_string(tick_count)+"\n"),
+			boost::asio::write(*(*i), boost::asio::buffer(message), //+" "+to_string(tick_count)+"\n"
 					boost::asio::transfer_all(), ignored_error);
 
 		}
-		tick_count++;
+		//tick_count++;
 
-	    std::chrono::milliseconds dura( 100 );
+	    std::chrono::milliseconds dura( 50 );
 	    std::this_thread::sleep_for( dura );
 	}
 }

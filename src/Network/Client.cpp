@@ -35,13 +35,14 @@ void client_thread(Client *c) {
 
 			istream str(&buffer);
 			string s;
-			getline(str, s);
+			while (getline(str, s)) {
 
-			if (s.length() > 0) {
-				std::unique_lock<std::mutex> mlock(c->event_queue->m);
-				c->event_queue->events.push(GameEvent(s));
-				cout << "recieved " << s << endl;
-				mlock.unlock();     // unlock before notificiation to minimize mutex contention
+				if (s.length() > 0) {
+					std::unique_lock<std::mutex> mlock(c->event_queue->m);
+					c->event_queue->events.push(GameEvent(s));
+					//cout << "recieved " << s << endl;
+					mlock.unlock(); // unlock before notificiation to minimize mutex contention
+				}
 			}
 		}
 
