@@ -15,9 +15,14 @@ namespace std {
 
 View::View(State *s) {
 	state = s;
-	next_view_x = 100;
-	next_view_y = 300;
+	next_view_x = view_x = 100;
+	next_view_y = view_y = 300;
 	loaded = false;
+	terrain_type = NULL;
+	blend = NULL;
+	terrain = NULL;
+	graph = NULL;
+	screen_size = NULL;
 }
 
 View::~View() {
@@ -65,7 +70,7 @@ void View::scroll(int dx, int dy) {
 	next_view_y += dy;
 }
 
-void View::click(ScreenCoord sc, int button) {
+void View::click(ScreenCoord sc, ScreenCoord down, int button) {
 	// calculate isometric coord
 
 	cout << button << endl;
@@ -76,20 +81,34 @@ void View::click(ScreenCoord sc, int button) {
 
 		if (button == 0) {
 
-			Instance *test = atPoint(sc);
+			select.clear();
+			int lowx = sc.x, lowy = sc.y, highx = down.x, highy = down.y;
+			if (highx < lowx) {
+				highx = sc.x;
+				lowx = down.x;
+			}
+			if (highy < lowy) {
+				highy = sc.y;
+				lowy = down.y;
+			}
 
-			if (test) {
-				if (select.count(test) == 0) {
-					select.insert( test );
-					cout << "select " << test->getTask()->graphic_id << endl;
-				}
-				else {
-					select.erase(test);
+			for (int x = lowx; x < highx; ++x) {
+				for (int y = lowy; y < highy; ++y) {
+					ScreenCoord sci;
+					sci.x = x;
+					sci.y = y;
+
+					Instance *test = atPoint(sci);
+					if (test) {
+						if (select.count(test) == 0) {
+							select.insert( test );
+							cout << "select " << test->getTask()->graphic_id << endl;
+						}
+					}
 				}
 			}
-			else {
-				select.clear();
-			}
+
+
 		}
 
 		/* button 2 issues commands to selection */
@@ -104,7 +123,11 @@ void View::click(ScreenCoord sc, int button) {
 				}
 				else {
 					//(*i)->setTask(new IsoCoord(ic), 0.0f);
-					state->issueCommand((*i), ic);
+
+					IsoCoord icr;
+					icr.ne = ic.ne + (rand() % 2000) / 500.0;
+					icr.se = ic.se + (rand() % 2000) / 500.0;
+					state->issueCommand((*i), icr);
 				}
 			}
 		}

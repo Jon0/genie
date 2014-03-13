@@ -34,7 +34,6 @@ class View {
 	Blendomatic *blend;
 	Resource **terrain_type;
 
-	Type *arch, *knt, *cannon, *fireball;
 	int next_view_x, next_view_y;
 	bool loaded;
 
@@ -54,7 +53,7 @@ public:
 	TileView *getTile(int, int);
 	Instance *atPoint(ScreenCoord);
 	void scroll(int, int);
-	void click(ScreenCoord, int);
+	void click(ScreenCoord, ScreenCoord, int);
 	void draw();
 	void test();
 	void debug();

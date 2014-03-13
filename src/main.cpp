@@ -31,7 +31,7 @@ EventQueue *eq;
 View *view;
 int color_table[256];
 
-ScreenCoord mouseCoord;
+ScreenCoord mouseCoord, mouseCoordDown;
 bool minimise, fullscreen;
 
 ScreenCoord screen_size;
@@ -112,7 +112,12 @@ void keyboard(GLFWwindow *, int key, int scancode, int action, int mods) {
 
 void mouse(GLFWwindow *, int button, int action, int mods) {
 	// action on button up
-	if (action == GLFW_RELEASE) view->click(mouseCoord, button);
+	if (action == GLFW_RELEASE) {
+		view->click(mouseCoord, mouseCoordDown, button);
+	}
+	else if (action == GLFW_PRESS) {
+		mouseCoordDown = mouseCoord;
+	}
 }
 
 void mousePos(GLFWwindow *, double x, double y) {
@@ -187,7 +192,7 @@ int main(int argc, char *argv[]) {
 	{
 		// toggle between window and fullscreen
 		if (minimise) {
-			setupWindow(!fullscreen); 
+			setupWindow(!fullscreen);
 			view->loadGraphics();
 			minimise = false;
 		}
