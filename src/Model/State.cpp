@@ -31,7 +31,7 @@ State::~State() {
 void State::startup(int s) {
 	cout << "generating map (" << s << ")" << endl;
 	seed = s;
-	default_random_engine gen(seed);
+	mt19937 gen(seed);
 
 	edge_length = 100;
 
