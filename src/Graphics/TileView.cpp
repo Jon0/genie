@@ -98,7 +98,7 @@ Instance *TileView::select(View *v, ScreenCoord click) {
 			}
 		}
 	}
-
+	return NULL; // nothing found
 }
 
 } /* namespace std */
