@@ -40,7 +40,7 @@ void client_thread(Client *c) {
 			if (s.length() > 0) {
 				std::unique_lock<std::mutex> mlock(c->event_queue->m);
 				c->event_queue->events.push(GameEvent(s));
-				//cout << "recieved " << s << endl;
+				cout << "recieved " << s << endl;
 				mlock.unlock();     // unlock before notificiation to minimize mutex contention
 			}
 		}
