@@ -34,6 +34,7 @@ public:
 
 	void startup(int);
 	void setClient(Client *);
+	bool withinMap(IsoCoord);
 	void update();
 	void addObj(Instance);
 	Tile *getTile(int, int);

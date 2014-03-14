@@ -13,7 +13,7 @@
 
 namespace std {
 
-View::View(State *s) {
+View::View(State *s): mm(s) {
 	state = s;
 	next_view_x = view_x = 100;
 	next_view_y = view_y = 300;
@@ -23,6 +23,7 @@ View::View(State *s) {
 	terrain = NULL;
 	graph = NULL;
 	screen_size = NULL;
+	select.reserve(100);
 }
 
 View::~View() {
@@ -70,6 +71,15 @@ void View::scroll(int dx, int dy) {
 	next_view_y += dy;
 }
 
+void View::scrollTo(Tile *t) {
+	IsoCoord ic;
+	ic.ne = t->x;
+	ic.se = t->y;
+
+	next_view_x = -(ic.ne + ic.se)*48 + screen_size->x/2;
+	next_view_y = -(ic.ne - ic.se - 1)*24 + screen_size->y/2;
+}
+
 void View::click(ScreenCoord sc, ScreenCoord down, int button) {
 	// calculate isometric coord
 
@@ -77,7 +87,13 @@ void View::click(ScreenCoord sc, ScreenCoord down, int button) {
 	IsoCoord ic = toIso(sc);
 	Tile *clicked_tile = state->getTile(ic.ne, ic.se);
 
-	if (0 <= ic.ne && ic.ne < state->getMapSize() && 0 <= ic.se && ic.se < state->getMapSize()) {
+	Tile *mmt = mm.onTile(sc);
+	if ( mmt ) {
+		scrollTo(mmt);
+		return;
+	}
+
+	if ( state->withinMap(ic) ) {
 
 		if (button == 0) {
 
@@ -134,6 +150,13 @@ void View::click(ScreenCoord sc, ScreenCoord down, int button) {
 	}
 }
 
+void View::drag(ScreenCoord sc) {
+	Tile *mmt = mm.onTile(sc);
+	if ( mmt ) {
+		scrollTo(mmt);
+	}
+}
+
 void View::draw() {
 	view_x = next_view_x;
 	view_y = next_view_y;
@@ -143,6 +166,8 @@ void View::draw() {
 			vt->draw(this);
 		}
 	}
+
+	mm.draw(screen_size);
 }
 
 void View::test() {
@@ -162,9 +187,12 @@ void View::loadGraphics() {
 	blend = new Blendomatic();
 
 	/* terrain graphics loading */
+	int color[18];
 	terrain_type = new Resource *[18];
 	for (int i = 0; i < 18; ++i) {
 		terrain_type[i] = terrain->getResource(i, false);
+
+		color[i] = terrain_type[i]->getFrame(0)->image_data[48 + 97 * 24];
 	}
 
 	tiles.clear();
@@ -174,6 +202,7 @@ void View::loadGraphics() {
 			tiles.push_back(TileView(t, terrain_type, blend));
 		}
 	}
+
 
 	/* unit graphics loading */
 	for (int i = 0; i < state->types.size(); ++i) {
@@ -187,6 +216,8 @@ void View::loadGraphics() {
 
 	delete graph;
 	delete terrain;
+
+	mm.generate(color);
 
 	loaded = true;
 }

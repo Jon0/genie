@@ -10,9 +10,12 @@
 
 namespace std {
 
+class Dot;
+
 class Player {
 public:
 	int color[16];
+	Dot *color_dot;
 	Player(unsigned char, unsigned char, unsigned char);
 	virtual ~Player();
 };

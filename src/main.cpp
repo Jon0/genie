@@ -32,7 +32,7 @@ View *view;
 int color_table[256];
 
 ScreenCoord mouseCoord, mouseCoordDown;
-bool minimise, fullscreen;
+bool minimise, fullscreen, mouseDown;
 
 ScreenCoord screen_size;
 
@@ -114,15 +114,18 @@ void mouse(GLFWwindow *, int button, int action, int mods) {
 	// action on button up
 	if (action == GLFW_RELEASE) {
 		view->click(mouseCoord, mouseCoordDown, button);
+		mouseDown = false;
 	}
 	else if (action == GLFW_PRESS) {
 		mouseCoordDown = mouseCoord;
+		mouseDown = true;
 	}
 }
 
 void mousePos(GLFWwindow *, double x, double y) {
 	mouseCoord.x = x;
 	mouseCoord.y = screen_size.y - y;
+	if (mouseDown) view->drag(mouseCoord);
 }
 
 void reshape(GLFWwindow *, int w, int h) {
@@ -132,7 +135,7 @@ void reshape(GLFWwindow *, int w, int h) {
 
 	glMatrixMode( GL_PROJECTION );
 	glLoadIdentity();
-	glOrtho( 0, w, 0, h, -1, 10000 );
+	glOrtho( 0, w, 0, h, -2000, 2000 );
 	glMatrixMode( GL_MODELVIEW );
 	glLoadIdentity();
 }

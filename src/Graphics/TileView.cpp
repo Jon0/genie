@@ -56,7 +56,7 @@ bool TileView::onScreen(View *v) {
 	tile_x = v->view_x+(se+ne)*48;
 	tile_y = v->view_y+(ne-se)*24;
 
-	return -96 <= tile_x && tile_x < v->screen_size->x && 0 <= tile_y && tile_y < v->screen_size->y + 48;
+	return -96 <= tile_x && tile_x < v->screen_size->x && 0 <= tile_y && tile_y < v->screen_size->y + 96;
 }
 
 void TileView::draw(View *v) {

@@ -8,6 +8,7 @@
 #include <math.h>
 
 #include "Player.h"
+#include "../Graphics/Dot.h"
 
 namespace std {
 
@@ -26,6 +27,8 @@ Player::Player(unsigned char r, unsigned char g, unsigned char b) {
 		//char rc = 256.0 - rf*((16-i-1)/16.0)*256.0, gc = 256.0 - gf*((16-i-1)/16.0)*256.0, bc = 256.0 - bf*((16-i-1)/16.0)*256.0;
 		color[i] = (0xff << 24) + (rc << 16) + (gc << 8) + bc;
 	}
+
+	color_dot = new Dot(color[0]);
 }
 
 Player::~Player() {

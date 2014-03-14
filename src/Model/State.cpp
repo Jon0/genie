@@ -71,11 +71,11 @@ void State::startup(int s) {
 	Player *p1 = new Player(gen() % 256, gen() % 256, gen() % 256); // 20, 40, 80
 	Player *p2 = new Player(gen() % 256, gen() % 256, gen() % 256); // 20, 40, 80
 
+	int p1_home_x = 30, p1_home_y = 30, p2_home_x = 70, p2_home_y = 70;
+
 	/* unit types */
 	/* unit graphics loading */
 	types.reserve(1000);
-	//allObj.reserve(1000);
-
 
 	// nice objects
 	int objs[] = {0, 16, 55, 63, 70, 104,
@@ -94,8 +94,20 @@ void State::startup(int s) {
 		random->addAbility( new Attack( k ) );
 
 		for (int i = 0; i < 3; ++i) {
-			int x = gen() % getMapSize();
-			int y = gen() % getMapSize();
+			int x = p1_home_x + (gen() % 50) - 25;
+			int y = p1_home_y + (gen() % 50) - 25;
+			addObj( Instance(this, random, x, y) );
+		}
+
+		types.push_back(Type (p2, new Dead( k+1 ), false));
+		random = &types.back();
+		random->addAbility( new Idle( k+2 ) );
+		random->addAbility( new Move( k+4, 0.08 ) );
+		random->addAbility( new Attack( k ) );
+
+		for (int i = 0; i < 3; ++i) {
+			int x = p2_home_x + (gen() % 50) - 25;
+			int y = p2_home_y + (gen() % 50) - 25;
 			addObj( Instance(this, random, x, y) );
 		}
 	}
@@ -106,36 +118,19 @@ void State::startup(int s) {
 		types.push_back(Type (p1, new Idle( k ), true));
 		Type *random = &types.back();
 		for (int i = 0; i < 3; ++i) {
-			int x = gen() % getMapSize();
-			int y = gen() % getMapSize();
+			int x = p1_home_x + (gen() % 50) - 25;
+			int y = p1_home_y + (gen() % 50) - 25;
+			addObj( Instance(this, random, x, y) );
+		}
+
+		types.push_back(Type (p2, new Idle( k ), true));
+		random = &types.back();
+		for (int i = 0; i < 3; ++i) {
+			int x = p2_home_x + (gen() % 50) - 25;
+			int y = p2_home_y + (gen() % 50) - 25;
 			addObj( Instance(this, random, x, y) );
 		}
 	}
-
-
-	types.push_back( Type(p1, new Dead( 0 + 1 ), false) );
-	Type *arch = &types.back();
-	arch->addAbility( new Idle( 0+2 ) );
-	arch->addAbility( new Move( 0+4, 0.08 ) );
-	arch->addAbility( new Attack( 0 ) );
-
-
-	types.push_back(Type (p1, new Dead( 16 + 1 ), false));
-	Type *cannon = &types.back();
-	cannon->addAbility( new Idle( 16+2 ) );
-	cannon->addAbility( new Move( 16+4, 0.06 ) );
-	cannon->addAbility( new Attack( 16 ) );
-
-	types.push_back(Type (p1, new Dead( 104 + 1 ), false));
-	Type *knt = &types.back();
-	knt->addAbility( new Idle( 104+2 ) );
-	knt->addAbility( new Move( 104+4, 0.12 ) );
-	knt->addAbility( new Attack( 104 ) );
-
-	addObj( Instance(this, arch, 1, 1) );
-	addObj( Instance(this, arch, 2, 3) );
-	addObj( Instance(this, cannon, 7, 3) );
-	addObj( Instance(this, knt, 5, 3) );
 
 	// completly random objects
 	for (int i = 0; i < 10; ++i) {
@@ -164,6 +159,10 @@ void State::startup(int s) {
 
 void State::setClient(Client *c) {
 	client = c;
+}
+
+bool State::withinMap(IsoCoord ic) {
+	return 0 <= ic.ne && ic.ne < edge_length && 0 <= ic.se && ic.se < edge_length;
 }
 
 void State::update() {

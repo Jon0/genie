@@ -15,6 +15,7 @@
 #include "../DrsFile.h"
 #include "../Resource.h"
 #include "Blendomatic.h"
+#include "Minimap.h"
 #include "TileView.h"
 
 
@@ -28,6 +29,7 @@ class Type;
 class View {
 	State *state;	// the state to show in view
 	vector<TileView> tiles;
+	Minimap mm;
 
 	DrsFile *graph;
 	DrsFile *terrain;
@@ -53,7 +55,9 @@ public:
 	TileView *getTile(int, int);
 	Instance *atPoint(ScreenCoord);
 	void scroll(int, int);
+	void scrollTo(Tile *);
 	void click(ScreenCoord, ScreenCoord, int);
+	void drag(ScreenCoord);
 	void draw();
 	void test();
 	void debug();
