@@ -22,8 +22,10 @@ public:
 	Texture();
 	virtual ~Texture();
 
+	bool containsPoint(int, int);
 	void createTexture(int *);
 	void updateTexture(int *);
+	void setPixel(int *, int, int, int);
 	void draw(int x, int y, int z);
 };
 

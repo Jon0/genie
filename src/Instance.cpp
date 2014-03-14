@@ -97,8 +97,8 @@ bool Instance::pointCheck(ScreenCoord sc) {
 		int x = f->anchorx + sc.x;
 		int y = f->anchory - sc.y;
 		//cout << "f " << i%task->group_size << ", " << x << "/" << f->width << ", " << y << "/" << f->height << endl;
-
-		if (0 <= x && x < f->width && 0 <= y && y < f->height) {
+		
+		if ( f->containsPoint(x, y) ) {
 			int *c = &f->image_data[x + y * f->width];
 			return c > 0;
 		}

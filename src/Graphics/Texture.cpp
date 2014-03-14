@@ -18,6 +18,10 @@ Texture::~Texture() {
 	// TODO Auto-generated destructor stub
 }
 
+bool Texture::containsPoint(int x, int y) {
+	return 0 <= x && x < width && 0 <= y && y < height;
+}
+
 void Texture::createTexture(int *image_data) {
 	glGenTextures(1, &texture);
 	glBindTexture(GL_TEXTURE_RECTANGLE_NV, texture);
@@ -32,6 +36,12 @@ void Texture::createTexture(int *image_data) {
 void Texture::updateTexture(int *image_data) {
 	glBindTexture(GL_TEXTURE_RECTANGLE_NV, texture);
 	glTexImage2D(GL_TEXTURE_RECTANGLE_NV, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, image_data);
+}
+
+void Texture::setPixel(int *image_data, int x, int y, int color) {
+	if ( containsPoint(x, y) ) {
+		image_data[x + width * y] = color;
+	}
 }
 
 void Texture::draw(int x, int y, int z) {

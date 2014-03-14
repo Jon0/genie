@@ -36,10 +36,10 @@ void Minimap::generate(int *color) {
 			int x = (i + j)*2;
 			int y = (i - j) + back.anchory;
 
-			image_data[x + back.width * y] = color[t];
-			image_data[x + back.width * y + 1] = color[t];
-			image_data[x + back.width * (y+1)] = color[t];
-			image_data[x + back.width * (y+1) + 1] = color[t];
+			back.setPixel(image_data, x, y, color[t]);
+			back.setPixel(image_data, x+1, y, color[t]);
+			back.setPixel(image_data, x, y+1, color[t]);
+			back.setPixel(image_data, x+1, y+1, color[t]);
 
 		}
 	}
@@ -48,7 +48,8 @@ void Minimap::generate(int *color) {
 }
 
 ScreenCoord Minimap::toScreen(Tile *) {
-
+	ScreenCoord sc;
+	return sc;
 }
 
 void Minimap::draw(ScreenCoord *screen_size) {
