@@ -5,6 +5,8 @@
  *      Author: asdf
  */
 
+#include <iostream>
+
 #include "../Instance.h"
 #include "Idle.h"
 
@@ -19,6 +21,7 @@ Idle::Idle(int gid) {
 
 void Idle::assignGraphic(Resource *res) {
 	image = res;
+	cout << "graphic id = " << res->res_id << endl;
 
 	if ( res->getFrames()  >= 8) {
 		group_size = res->getFrames() / 8;

@@ -5,11 +5,14 @@
  *      Author: asdf
  */
 
+
+
 #include "Resource.h"
 
 namespace std {
 
 Resource::Resource(Player *p, int id, unsigned char *data, bool mirror) {
+	res_id = id;
 	SlpHead *head = (SlpHead *)data;
 
 	// set total number of frames;

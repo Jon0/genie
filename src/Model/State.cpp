@@ -19,9 +19,13 @@
 namespace std {
 
 State::State() {
+	gamedata = new GenieFile();
+	gamedata->LoadGenie("resource/empires2_x1_p1.dat");
+	gamedata->ReadUnitsData(NULL, NULL);
 	edge_length = 0;
 	next_id = 0;
 	seed = 0;
+	client = NULL;
 }
 
 State::~State() {
@@ -29,6 +33,9 @@ State::~State() {
 }
 
 void State::startup(int s) {
+
+
+
 	cout << "generating map (" << s << ")" << endl;
 	seed = s;
 	mt19937 gen(seed);
@@ -68,8 +75,10 @@ void State::startup(int s) {
 	}
 
 	/* players */
-	Player *p1 = new Player(gen() % 256, gen() % 256, gen() % 256); // 20, 40, 80
-	Player *p2 = new Player(gen() % 256, gen() % 256, gen() % 256); // 20, 40, 80
+	GenieCiv *random_civ = gamedata->Civs.data()[gen() % gamedata->Civs.size()];
+	Player *p1 = new Player(random_civ, gen() % 256, gen() % 256, gen() % 256); // 20, 40, 80
+	random_civ = gamedata->Civs.data()[gen() % gamedata->Civs.size()];
+	Player *p2 = new Player(random_civ, gen() % 256, gen() % 256, gen() % 256); // 20, 40, 80
 
 	int p1_home_x = 30, p1_home_y = 30, p2_home_x = 70, p2_home_y = 70;
 
@@ -77,82 +86,91 @@ void State::startup(int s) {
 	/* unit graphics loading */
 	types.reserve(1000);
 
-	// nice objects
-	int objs[] = {0, 16, 55, 63, 70, 104,
-			168, 178, 210, 238, 305,
-			354, 453, 491, 496, 693,
-			693, 704, 730, 741, 747,
-			763, 785, 974, 1278, 1310,
-			1334, 1452, 1471, 1480, 1501,
-			1759};
-	for (int i = 0; i < 32; ++i) {
-		int k = objs[i];
-		types.push_back(Type (p1, new Dead( k+1 ), false));
-		Type *random = &types.back();
-		random->addAbility( new Idle( k+2 ) );
-		random->addAbility( new Move( k+4, 0.08 ) );
-		random->addAbility( new Attack( k ) );
-
-		for (int i = 0; i < 3; ++i) {
-			int x = p1_home_x + (gen() % 50) - 25;
-			int y = p1_home_y + (gen() % 50) - 25;
-			addObj( Instance(this, random, x, y) );
-		}
-
-		types.push_back(Type (p2, new Dead( k+1 ), false));
-		random = &types.back();
-		random->addAbility( new Idle( k+2 ) );
-		random->addAbility( new Move( k+4, 0.08 ) );
-		random->addAbility( new Attack( k ) );
-
-		for (int i = 0; i < 3; ++i) {
-			int x = p2_home_x + (gen() % 50) - 25;
-			int y = p2_home_y + (gen() % 50) - 25;
-			addObj( Instance(this, random, x, y) );
-		}
-	}
-
-	int blds[] = {575, 1556, 1678};
+	types.push_back(*p1->createType(2));
+	Type *random = &types.back();
 	for (int i = 0; i < 3; ++i) {
-		int k = blds[i];
-		types.push_back(Type (p1, new Idle( k ), true));
-		Type *random = &types.back();
-		for (int i = 0; i < 3; ++i) {
-			int x = p1_home_x + (gen() % 50) - 25;
-			int y = p1_home_y + (gen() % 50) - 25;
-			addObj( Instance(this, random, x, y) );
-		}
-
-		types.push_back(Type (p2, new Idle( k ), true));
-		random = &types.back();
-		for (int i = 0; i < 3; ++i) {
-			int x = p2_home_x + (gen() % 50) - 25;
-			int y = p2_home_y + (gen() % 50) - 25;
-			addObj( Instance(this, random, x, y) );
-		}
+		int x = p2_home_x + (gen() % 50) - 25;
+		int y = p2_home_y + (gen() % 50) - 25;
+		addObj(Instance(this, random, x, y));
 	}
 
-	// completly random objects
-	for (int i = 0; i < 10; ++i) {
-		int k = gen() % 1764;
-		types.push_back(Type (p2, new Dead( k+1 ), false));
-		Type *random = &types.back();
-		random->addAbility( new Idle( k+2 ) );
-		random->addAbility( new Move( k+4, 0.08 ) );
-		int x = gen() % getMapSize();
-		int y = gen() % getMapSize();
-		addObj( Instance(this, random, x, y) );
-	}
 
-	for (int i = 0; i < 20; ++i) {
-		int k = gen() % 1764;
-		types.push_back(Type (p2, new Idle( k ), true));
-		Type *random = &types.back();
-
-		int x = gen() % getMapSize();
-		int y = gen() % getMapSize();
-		addObj( Instance(this, random, x, y) );
-	}
+	// nice objects
+//	int objs[] = {0, 16, 55, 63, 70, 104,
+//			168, 178, 210, 238, 305,
+//			354, 453, 491, 496, 693,
+//			693, 704, 730, 741, 747,
+//			763, 785, 974, 979, 1278, 1310,
+//			1334, 1452, 1471, 1480, 1501,
+//			1759};
+//	for (int i = 0; i < 33; ++i) {
+//		int k = objs[i];
+//		types.push_back(Type (p1, new Dead( k+1 ), false));
+//		Type *random = &types.back();
+//		random->addAbility( new Idle( k+2 ) );
+//		random->addAbility( new Move( k+4, 0.08 ) );
+//		random->addAbility( new Attack( k ) );
+//
+//		for (int i = 0; i < 3; ++i) {
+//			int x = p1_home_x + (gen() % 50) - 25;
+//			int y = p1_home_y + (gen() % 50) - 25;
+//			addObj( Instance(this, random, x, y) );
+//		}
+//
+//		types.push_back(Type (p2, new Dead( k+1 ), false));
+//		random = &types.back();
+//		random->addAbility( new Idle( k+2 ) );
+//		random->addAbility( new Move( k+4, 0.08 ) );
+//		random->addAbility( new Attack( k ) );
+//
+//		for (int i = 0; i < 3; ++i) {
+//			int x = p2_home_x + (gen() % 50) - 25;
+//			int y = p2_home_y + (gen() % 50) - 25;
+//			addObj( Instance(this, random, x, y) );
+//		}
+//	}
+//
+//	int blds[] = {575, 1556, 1678};
+//	for (int i = 0; i < 3; ++i) {
+//		int k = blds[i];
+//		types.push_back(Type (p1, new Idle( k ), true));
+//		Type *random = &types.back();
+//		for (int i = 0; i < 3; ++i) {
+//			int x = p1_home_x + (gen() % 50) - 25;
+//			int y = p1_home_y + (gen() % 50) - 25;
+//			addObj( Instance(this, random, x, y) );
+//		}
+//
+//		types.push_back(Type (p2, new Idle( k ), true));
+//		random = &types.back();
+//		for (int i = 0; i < 3; ++i) {
+//			int x = p2_home_x + (gen() % 50) - 25;
+//			int y = p2_home_y + (gen() % 50) - 25;
+//			addObj( Instance(this, random, x, y) );
+//		}
+//	}
+//
+//	// completly random objects
+//	for (int i = 0; i < 10; ++i) {
+//		int k = gen() % 1764;
+//		types.push_back(Type (p2, new Dead( k+1 ), false));
+//		Type *random = &types.back();
+//		random->addAbility( new Idle( k+2 ) );
+//		random->addAbility( new Move( k+4, 0.08 ) );
+//		int x = gen() % getMapSize();
+//		int y = gen() % getMapSize();
+//		addObj( Instance(this, random, x, y) );
+//	}
+//
+//	for (int i = 0; i < 20; ++i) {
+//		int k = gen() % 1764;
+//		types.push_back(Type (p2, new Idle( k ), true));
+//		Type *random = &types.back();
+//
+//		int x = gen() % getMapSize();
+//		int y = gen() % getMapSize();
+//		addObj( Instance(this, random, x, y) );
+//	}
 
 	cout << "completed generating map" << endl;
 }

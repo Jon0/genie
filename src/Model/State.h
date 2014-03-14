@@ -12,8 +12,9 @@
 #include <list>
 
 #include "../def.h"
-#include "Tile.h"
+#include "../Data/GenieFile.h"
 #include "../Types/Type.h"
+#include "Tile.h"
 
 namespace std {
 
@@ -23,6 +24,7 @@ class Instance;
 class State {
 	int next_id;
 public:
+	GenieFile *gamedata;
 	int edge_length, seed;
 	vector<Tile> tile;
 	vector<Type> types;

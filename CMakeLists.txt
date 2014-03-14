@@ -15,7 +15,8 @@ include_directories ( ${GLFW_INCLUDE_DIR} )
 include_directories ("${PROJECT_SOURCE_DIR}/library/glew-1.10.0/include")
 include_directories ("${PROJECT_SOURCE_DIR}/library/glfw-3.0.4/include")
 
-#find_package(ZLIB REQUIRED)
+find_package(ZLIB REQUIRED)
+include_directories( ${ZLIB_INCLUDE_DIRS} )
 
 #set(BOOST_INCLUDEDIR D:/boost_1_54_0/include)
 #set(BOOST_LIBRARYDIR D:/boost_1_54_0/lib)
@@ -25,8 +26,8 @@ include_directories ("${PROJECT_SOURCE_DIR}/library/glfw-3.0.4/include")
 set (Boost_USE_STATIC_LIBS ON) 
 set (Boost_MULTITHREADED ON) 
 set (Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost COMPONENTS system REQUIRED)
-include_directories( ${Boost_INCLUDE_DIRS} ) #${ZLIB_INCLUDE_DIRS}
+find_package(Boost COMPONENTS system date_time filesystem iostreams REQUIRED)
+include_directories( ${Boost_INCLUDE_DIRS} )
 
 add_library( glew STATIC
 	${GLEW_SOURCE}
@@ -44,7 +45,7 @@ file(GLOB SRC_FILES
 
 add_definitions(-std=c++11)
 add_executable (GenieMain ${SRC_FILES})
-target_link_libraries (GenieMain glew glfw ${GLFW_LIBRARIES} ${Boost_LIBRARIES} ) # ${ZLIB_LIBRARIES}
+target_link_libraries (GenieMain glew glfw ${GLFW_LIBRARIES} ${Boost_LIBRARIES} ${ZLIB_LIBRARIES})
 
 
 

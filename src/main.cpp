@@ -141,10 +141,9 @@ void reshape(GLFWwindow *, int w, int h) {
 }
 
 int main(int argc, char *argv[]) {
+	// setup glfw
 	if (!glfwInit()) exit(EXIT_FAILURE);
-
 	glfwSetErrorCallback(error_callback);
-
 	setupWindow(false);
 
 	// Initialize GLEW
@@ -154,8 +153,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	srand( time(NULL) );
-	//Data *data = new Data();
-
 	if (argc == 1) {
 		Host *h = new Host();
 	}

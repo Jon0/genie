@@ -5,6 +5,8 @@
  *      Author: asdf
  */
 
+//TODO unused class
+
 #ifndef GAMEDATA_H_
 #define GAMEDATA_H_
 
