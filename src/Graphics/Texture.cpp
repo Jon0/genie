@@ -61,4 +61,21 @@ void Texture::draw(int x, int y, int z) {
 	glPopMatrix();
 }
 
+void Texture::draw(int x, int y, int wid, int hei, int z) {
+	glPushMatrix();
+	glTranslatef(x-anchorx, y-height+anchory, -y-z);
+	glBindTexture(GL_TEXTURE_RECTANGLE_NV, texture);
+	glBegin( GL_QUADS );
+	glTexCoord2i( 0, 0 );
+	glVertex3i( 0, 0, 0 );
+	glTexCoord2i( wid, 0 );
+	glVertex3i( wid, 0, 0 );
+	glTexCoord2i( wid, hei );
+	glVertex3i( wid, hei, 0 );
+	glTexCoord2i( 0, hei );
+	glVertex3i( 0, hei, 0 );
+	glEnd();
+	glPopMatrix();
+}
+
 } /* namespace std */

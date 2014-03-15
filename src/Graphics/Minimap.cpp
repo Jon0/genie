@@ -7,7 +7,7 @@
 
 #include "../Model/Player.h"
 #include "../Model/State.h"
-#include "../Instance.h"
+#include "../Model/Instance.h"
 #include "Dot.h"
 #include "Minimap.h"
 
@@ -64,7 +64,7 @@ void Minimap::draw(ScreenCoord *screen_size) {
 		int x = (ne + se)*2 + screen_size->x - 400;
 		int y = (ne - se) + back.anchory;
 
-		(*i).type->owner->color_dot->draw(x, y, -600);
+		(*i).owner->color_dot->draw(x, y, -600);
 
 	}
 }

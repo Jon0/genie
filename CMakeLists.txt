@@ -35,11 +35,14 @@ add_library( glew STATIC
 
 file(GLOB SRC_FILES
     "src/*.cpp"
-    "src/Data/*.cpp"
+    "src/GenieData/*.cpp"
+    "src/GenieData/Unit/*.cpp"
     "src/Graphics/*.cpp"
+    "src/FileReading/*.cpp"
     "src/Model/*.cpp"
+    "src/Model/Types/*.cpp"
+    "src/Model/Types/Ability/*.cpp"
     "src/Network/*.cpp"
-    "src/Types/*.cpp"
 )
 
 

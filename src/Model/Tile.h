@@ -12,6 +12,11 @@
 
 namespace std {
 
+#define TILE_NE 0
+#define TILE_NW 1
+#define TILE_SW 2
+#define TILE_SE 3
+
 class Instance;
 
 class Tile {

@@ -9,10 +9,9 @@
 
 #include "../Graphics/Frame.h"
 #include "../Model/Tile.h"
-#include "../Types/Type.h"
-
-#include "../Instance.h"
-#include "../Resource.h"
+#include "../Model/Types/Type.h"
+#include "../Model/Instance.h"
+#include "../FileReading/Resource.h"
 #include "Blend.h"
 #include "Blendomatic.h"
 #include "View.h"
@@ -71,6 +70,11 @@ void TileView::draw(View *v) {
 
 			if (v->select.count(obj) > 0) {
 				obj->type->circle.draw(sc.x, sc.y, 0);
+
+				sc.y += 60;
+
+				float percent = (float)obj->hp / (float)obj->type->unit->HitPoints;
+				v->hb.draw(sc, percent);
 			}
 		}
 	}

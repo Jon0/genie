@@ -14,7 +14,7 @@
 
 #include "def.h"
 #include "Model/State.h"
-#include "Data/Data.h"
+#include "GenieData/DatFile.h"
 #include "Graphics/View.h"
 #include "Model/Tile.h"
 #include "Network/EventQueue.h"
@@ -26,6 +26,7 @@
 using namespace std;
 
 GLFWwindow* window = NULL;
+genie::DatFile *gamedata;
 State *game_state;
 EventQueue *eq;
 View *view;
@@ -157,7 +158,14 @@ int main(int argc, char *argv[]) {
 		Host *h = new Host();
 	}
 
-	game_state = new State();
+	/*
+	 * game state setup
+	 */
+	gamedata = new genie::DatFile();
+	gamedata->setGameVersion(genie::GV_TC);
+	gamedata->load("resource/empires2_x1_p1.dat");
+
+	game_state = new State(gamedata);
 	eq = new EventQueue(game_state);
 
 	if (argc == 1) {
@@ -166,6 +174,7 @@ int main(int argc, char *argv[]) {
 	else {
 		game_state->setClient(new Client(eq, argv[1]));
 	}
+
 
 	/* silly place to read colours before creating view */
 	ifstream file;
@@ -183,7 +192,7 @@ int main(int argc, char *argv[]) {
 	 * hopefully get the initialisation
 	 */
 	eq->startupWait();
-	view->loadGraphics();
+	view->loadGraphics(gamedata);
 
 	cout << "loaded " << endl;
 
@@ -193,7 +202,7 @@ int main(int argc, char *argv[]) {
 		// toggle between window and fullscreen
 		if (minimise) {
 			setupWindow(!fullscreen);
-			view->loadGraphics();
+			view->loadGraphics(gamedata);
 			minimise = false;
 		}
 

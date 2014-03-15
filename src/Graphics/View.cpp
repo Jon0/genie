@@ -7,8 +7,8 @@
 
 #include "../Model/Player.h"
 #include "../Model/State.h"
-#include "../Types/Type.h"
-#include "../Instance.h"
+#include "../Model/Types/Type.h"
+#include "../Model/Instance.h"
 #include "View.h"
 
 namespace std {
@@ -89,7 +89,15 @@ void View::click(ScreenCoord sc, ScreenCoord down, int button) {
 
 	Tile *mmt = mm.onTile(sc);
 	if ( mmt ) {
-		scrollTo(mmt);
+		if (button == 0) scrollTo(mmt);
+		else if (button == 1) {
+			ic.ne = mmt->x;
+			ic.se = mmt->y;
+			for (unordered_set<Instance *>::iterator i = select.begin(); i != select.end(); ++i) {
+				state->issueCommand((*i), ic);
+
+			}
+		}
 		return;
 	}
 
@@ -133,17 +141,10 @@ void View::click(ScreenCoord sc, ScreenCoord down, int button) {
 
 			for (unordered_set<Instance *>::iterator i = select.begin(); i != select.end(); ++i) {
 				if (ins) {
-					//(*i)->setTask(ins);
-
 					state->issueCommand((*i), ins);
 				}
 				else {
-					//(*i)->setTask(new IsoCoord(ic), 0.0f);
-
-					IsoCoord icr;
-					icr.ne = ic.ne + (rand() % 2000) / 500.0;
-					icr.se = ic.se + (rand() % 2000) / 500.0;
-					state->issueCommand((*i), icr);
+					state->issueCommand((*i), ic);
 				}
 			}
 		}
@@ -181,7 +182,7 @@ void View::debug() {
 	}
 }
 
-void View::loadGraphics() {
+void View::loadGraphics(genie::DatFile *df) {
 	graph = new DrsFile("resource/graphics.drs");
 	terrain = new DrsFile("resource/terrain.drs");
 	blend = new Blendomatic();
@@ -190,7 +191,7 @@ void View::loadGraphics() {
 	int color[18];
 	terrain_type = new Resource *[18];
 	for (int i = 0; i < 18; ++i) {
-		terrain_type[i] = terrain->getResource(i, false);
+		terrain_type[i] = terrain->getResource(i);
 
 		color[i] = terrain_type[i]->getFrame(0)->image_data[48 + 97 * 24];
 	}
@@ -207,10 +208,11 @@ void View::loadGraphics() {
 	/* unit graphics loading */
 	for (int i = 0; i < state->types.size(); ++i) {
 		Type *t = &state->types.data()[i];
-		Player *p = t->owner;
+		Player *p = t->initial_owner;
 		for (int j = 0; j < t->ability.size(); ++j) {
 			int gid = t->ability.data()[j]->graphic_id;
-			t->ability.data()[j]->assignGraphic( graph->getResource(p, gid, !t->build) );
+			genie::Graphic *g = &df->Graphics.data()[gid];
+			t->ability.data()[j]->assignGraphic( graph->getSlpFromId(p, g) );
 		}
 	}
 

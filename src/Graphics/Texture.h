@@ -27,6 +27,7 @@ public:
 	void updateTexture(int *);
 	void setPixel(int *, int, int, int);
 	void draw(int x, int y, int z);
+	void draw(int x, int y, int wid, int hei, int z);
 };
 
 } /* namespace std */

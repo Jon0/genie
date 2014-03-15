@@ -7,16 +7,13 @@
 
 #include <math.h>
 
+#include "../GenieData/Civ.h"
 #include "../Graphics/Dot.h"
-#include "../Types/Dead.h"
-#include "../Types/Idle.h"
-#include "../Types/Move.h"
-#include "../Types/Attack.h"
 #include "Player.h"
 
 namespace std {
 
-Player::Player(GenieCiv *gc, unsigned char r, unsigned char g, unsigned char b) {
+Player::Player(genie::Civ *gc, unsigned char r, unsigned char g, unsigned char b) {
 	civ = gc;
 
 	// normalise colour vector
@@ -40,25 +37,6 @@ Player::Player(GenieCiv *gc, unsigned char r, unsigned char g, unsigned char b) 
 
 Player::~Player() {
 	// TODO Auto-generated destructor stub
-}
-
-Type *Player::createType(int i) {
-	GenieUnit *u = &civ->Units.data()[i];
-
-	cout << u->u_data->name1 << endl;
-	cout << u->u_data->head.graphic_default << endl;
-
-	int k =  181; //u->u_data->head.graphic_default;
-
-	Type *random = new Type(this, new Idle( k+1 ), false);
-	random->addAbility( new Idle( k+2 ) );
-	random->addAbility( new Move( k+4, 0.08 ) );
-	random->addAbility( new Attack( k ) );
-
-
-
-
-	return random;
 }
 
 } /* namespace std */

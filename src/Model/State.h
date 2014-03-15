@@ -12,8 +12,9 @@
 #include <list>
 
 #include "../def.h"
-#include "../Data/GenieFile.h"
-#include "../Types/Type.h"
+#include "../GenieData/DatFile.h"
+#include "Types/Type.h"
+#include "Player.h"
 #include "Tile.h"
 
 namespace std {
@@ -24,14 +25,15 @@ class Instance;
 class State {
 	int next_id;
 public:
-	GenieFile *gamedata;
+	genie::DatFile *gamedata;
 	int edge_length, seed;
 	vector<Tile> tile;
 	vector<Type> types;
 	list<Instance> allObj;	// cannot modify sequence
+	vector<Player> players;
 	Client *client;	// TODO remove
 
-	State();
+	State(genie::DatFile *);
 	virtual ~State();
 
 	void startup(int);

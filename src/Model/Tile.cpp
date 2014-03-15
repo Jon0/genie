@@ -8,7 +8,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-#include "../Instance.h"
+#include "Instance.h"
 #include "Tile.h"
 
 namespace std {

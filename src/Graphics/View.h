@@ -12,9 +12,11 @@
 #include <vector>
 
 #include "../def.h"
-#include "../DrsFile.h"
-#include "../Resource.h"
+#include "../FileReading/DrsFile.h"
+#include "../FileReading/Resource.h"
+#include "../GenieData/DatFile.h"
 #include "Blendomatic.h"
+#include "HealthBar.h"
 #include "Minimap.h"
 #include "TileView.h"
 
@@ -40,6 +42,7 @@ class View {
 	bool loaded;
 
 public:
+	HealthBar hb;
 	unordered_set<Instance *> select;
 
 
@@ -61,7 +64,7 @@ public:
 	void draw();
 	void test();
 	void debug();
-	void loadGraphics();
+	void loadGraphics(genie::DatFile *);
 };
 
 } /* namespace std */

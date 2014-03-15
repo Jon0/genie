@@ -12,18 +12,16 @@
 #include <iterator>
 
 #include "../Model/State.h"
-#include "../Instance.h"
+#include "../Model/Instance.h"
 #include "GameEvent.h"
 
 namespace std {
 
 GameEvent::GameEvent(string s) {
-
 	// string split
 	istringstream iss(s);
 	vector<string> tokens{istream_iterator<string>{iss},
 	         istream_iterator<string>{}};
-
 
 	if (tokens.size() == 0) {
 		cerr << "0 sized token" << endl;
