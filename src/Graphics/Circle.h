@@ -16,6 +16,8 @@ class Circle: public Texture {
 public:
 	Circle();
 	virtual ~Circle();
+
+	void create(float);
 };
 
 } /* namespace std */

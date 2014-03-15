@@ -58,6 +58,7 @@ public:
 	void draw(ScreenCoord);
 	bool pointCheck(ScreenCoord);
 	vector<Instance *> nearbyIns();
+	void updateTile();
 };
 
 } /* namespace std */

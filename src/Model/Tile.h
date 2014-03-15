@@ -10,6 +10,8 @@
 
 #include <vector>
 
+#include "../def.h"
+
 namespace std {
 
 #define TILE_NE 0
@@ -22,19 +24,25 @@ class Instance;
 class Tile {
 	vector<Instance *> obj;
 	Tile *adj[4];
+	bool pass;
 
 public:
+	IsoCoord position;
 	unsigned int x, y, type;
-	bool pass;
+
 	Tile(unsigned int, unsigned int);
+	virtual ~Tile();
+
+	bool contains(IsoCoord);
 	bool isPassable();
+	float dist(IsoCoord);
 	void connect(int, Tile *);
 	Tile *getAdj(int);
 	int objs();
 	Instance *getObj(int);
 	void addObj(Instance *);
 	void removeObj(Instance *i);
-	virtual ~Tile();
+
 };
 
 } /* namespace std */

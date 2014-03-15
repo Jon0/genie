@@ -53,8 +53,8 @@ bool Attack::update(Instance *i, void *arg) {
 		return true;
 	}
 
-	float sum = range + i->type->radius + target->type->radius + 0.05;
-	if (i->dist(target) > sum) {
+	float sum = range + i->type->radius + target->type->radius;
+	if (i->dist(target) > sum + 0.15) {
 		i->setTask(&target->current, sum);
 	}
 	else {

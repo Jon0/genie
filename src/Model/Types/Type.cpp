@@ -32,7 +32,8 @@ Type::Type(Player *p, genie::Unit *u) {
 	else {
 		ability.push_back( new Idle( unit->StandingGraphic.first ) );
 	}
-	radius = 0.35f;
+	radius = unit->SizeRadius.first;
+	circle.create(radius);
 }
 
 Type::Type(Player *p, int i): Type(p, &p->civ->Units.data()[i]) {}

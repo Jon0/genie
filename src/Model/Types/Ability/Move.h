@@ -17,7 +17,8 @@ class Resource;
 
 struct move_args {
 	Path *path;
-	IsoCoord *target;
+	IsoCoord *next_target; // the next waypoint
+	IsoCoord *final_target; // the next waypoint
 	float range;
 };
 
@@ -32,7 +33,7 @@ public:
 	virtual void invoke(Instance *, IsoCoord *, float);
 	virtual bool complete(Instance *, void *);
 	virtual bool update(Instance *, void *);
-	void update_simple(Instance *i, IsoCoord);
+	void update_simple(Instance *i, IsoCoord, float);
 };
 
 } /* namespace std */

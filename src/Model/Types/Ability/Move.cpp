@@ -36,8 +36,14 @@ void Move::invoke(Instance *i, IsoCoord *target, float radius) {
 	// TODO where is path deleted?
 	// TODO append existing path if shift clicked
 	move_args *ma = new move_args();
-	ma->path = new Path(i->on, i->gs->getTile(target->ne, target->se), target->ne - (int) target->ne, target->se - (int) target->se);
-	ma->target = target;
+	ma->path = new Path(i->on, target);
+
+	if (ma->path->length() > 0) ma->next_target = &ma->path->next()->position;
+	else {
+		ma->next_target = NULL;
+	}
+
+	ma->final_target = target;
 	ma->range = radius;
 
 	task_arg t;
@@ -52,6 +58,7 @@ bool Move::complete(Instance *, void *) {
 
 bool Move::update(Instance *i, void *arg) {
 	int xdir, ydir;
+	cout << "up" << endl;
 
 	move_args *ma = (move_args *) arg;
 	Path *path = ma->path;
@@ -59,33 +66,30 @@ bool Move::update(Instance *i, void *arg) {
 	/*
 	 * path empty, or within range
 	 */
-	float dist = i->dist(ma->target);
-	if (path->point.size() == 0 || dist <= ma->range) {
+	float dist_to_final = i->dist(ma->final_target);
+	if (dist_to_final < ma->range) {
 		return true;
 	}
 
-
-	// path following
-	Tile *next = path->point.data()[path->step];
-	IsoCoord ncoord;
-	ncoord.ne = next->x;
-	ncoord.se = next->y;
-
 	bool complete = false;
-	update_simple(i, ncoord);
-	if ((int) i->current.ne == next->x && (int) i->current.se == next->y) {
+	float remain = speed;
+	float dist_to_next = i->dist(ma->next_target);
+	if ( dist_to_next < speed ) {
+		i->current = *ma->next_target;
+		remain -= dist_to_next;
+	}
 
-		if (path->step < path->point.size() - 1) {
-			path->step++;
-		} else {
+	update_simple(i, *ma->next_target, remain);
+	if (i->current.ne == ma->next_target->ne && i->current.se == ma->next_target->se) {
+
+		if (path->length() <= 0) {
 			complete = true;
 		}
-
-		i->on->removeObj(i);
-		i->on = next;
-		i->on->addObj(i);
-
+		else {
+			ma->next_target = &ma->path->next()->position;
+		}
 	}
+	i->updateTile();
 
 //	vector<Instance *> ins = i->nearbyIns();
 //	for (vector<Instance *>::iterator iter = ins.begin(); iter != ins.end(); ++iter) {
@@ -106,14 +110,14 @@ bool Move::update(Instance *i, void *arg) {
 //	}
 
 	i->frame += inc_rate * 10.0f;
+
+	if (complete) {
+		delete ma->path;
+	}
 	return complete;
 }
 
-void Move::update_simple(Instance *i, IsoCoord target) {
-	if ( i->dist(&target) < speed ) {
-		i->current = target;
-		return;
-	}
+void Move::update_simple(Instance *i, IsoCoord target, float speed) {
 
 	// direction vector i -> target
 	float ne = target.ne - i->current.ne;

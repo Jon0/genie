@@ -6,6 +6,7 @@
  */
 
 #include <stdlib.h>
+#include <math.h>
 #include <iostream>
 
 #include "Instance.h"
@@ -21,10 +22,26 @@ Tile::Tile(unsigned int xi, unsigned int yi) {
 	}
 	pass = true;
 	type = 0;
+	position.ne = xi;
+	position.se = yi;
+}
+
+Tile::~Tile() {
+	// TODO Auto-generated destructor stub
+}
+
+bool Tile::contains(IsoCoord ic) {
+	return (unsigned int)ic.ne == x && (unsigned int)ic.se == y;
 }
 
 bool Tile::isPassable() {
-	return obj.size() == 0;
+	return obj.size() <= 1;
+}
+
+float Tile::dist(IsoCoord point) {
+	float dx = point.ne - position.ne;
+	float dy = point.se - position.se;
+	return sqrt(dx*dx + dy*dy);
 }
 
 void Tile::connect(int i, Tile *t) {
@@ -65,10 +82,6 @@ void Tile::removeObj(Instance *ins) {
 
 
 	//cout << obj.size() << endl;
-}
-
-Tile::~Tile() {
-	// TODO Auto-generated destructor stub
 }
 
 } /* namespace std */

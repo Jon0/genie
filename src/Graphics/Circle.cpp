@@ -13,11 +13,21 @@
 namespace std {
 
 Circle::Circle() {
+
+}
+
+Circle::~Circle() {
+	// TODO Auto-generated destructor stub
+}
+
+void Circle::create(float radius) {
 	width = 100;
 	height = 50;
 	anchorx = 50;
 	anchory = 25;
 	int *image_data = new int[width*height];
+	int max = radius * 671;
+	int min = radius * 614;
 
 	for (int i = 0; i < width; ++i) {
 		for (int j = 0; j < height; ++j) {
@@ -26,7 +36,7 @@ Circle::Circle() {
 			int dy = j-anchory;
 			float distance = dx*dx/3.0 + dy*dy; // distance from centre
 
-			if (180 < distance && distance < 200) {
+			if (min < distance && distance < max) {
 				image_data[i + j * width] = 0xffffffff;
 			}
 			else {
@@ -37,10 +47,6 @@ Circle::Circle() {
 
 
 	createTexture(image_data);
-}
-
-Circle::~Circle() {
-	// TODO Auto-generated destructor stub
 }
 
 } /* namespace std */

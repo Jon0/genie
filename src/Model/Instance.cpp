@@ -157,4 +157,14 @@ vector<Instance *> Instance::nearbyIns() {
 
 }
 
+void Instance::updateTile() {
+	int ne = current.ne;
+	int se = current.se;
+	if (on->x != ne || on->y != se) {
+		on->removeObj(this);
+		on = gs->getTile(ne, se);
+		on->addObj(this);
+	}
+}
+
 } /* namespace std */
