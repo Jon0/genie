@@ -48,12 +48,20 @@ Ability *Instance::getTask() {
 }
 
 float Instance::dist(Instance *other) {
+	if ( !other ) {
+		cout << "distance to null instance?" << endl;
+		return 0;
+	}
 	float dx = other->current.ne - current.ne;
 	float dy = other->current.se - current.se;
 	return sqrt(dx*dx + dy*dy);
 }
 
 float Instance::dist(IsoCoord *point) {
+	if ( !point ) {
+		cout << "distance to null point?" << endl;
+		return 0;
+	}
 	float dx = point->ne - current.ne;
 	float dy = point->se - current.se;
 	return sqrt(dx*dx + dy*dy);

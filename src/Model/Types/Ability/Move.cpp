@@ -58,8 +58,6 @@ bool Move::complete(Instance *, void *) {
 
 bool Move::update(Instance *i, void *arg) {
 	int xdir, ydir;
-	cout << "up" << endl;
-
 	move_args *ma = (move_args *) arg;
 	Path *path = ma->path;
 
@@ -67,7 +65,8 @@ bool Move::update(Instance *i, void *arg) {
 	 * path empty, or within range
 	 */
 	float dist_to_final = i->dist(ma->final_target);
-	if (dist_to_final < ma->range) {
+	if (dist_to_final < ma->range || !ma->next_target) {
+		delete ma->path;
 		return true;
 	}
 
@@ -90,25 +89,6 @@ bool Move::update(Instance *i, void *arg) {
 		}
 	}
 	i->updateTile();
-
-//	vector<Instance *> ins = i->nearbyIns();
-//	for (vector<Instance *>::iterator iter = ins.begin(); iter != ins.end(); ++iter) {
-//		float sum = (*iter)->type->radius + i->type->radius;
-//		if ( i->dist((*iter)) < sum ) {
-//			// direction vector iter -> i
-//			float ne = i->current.ne - (*iter)->current.ne;
-//			float se = i->current.se - (*iter)->current.se;
-//			float d = sqrt(ne*ne + se*se) / speed;
-//
-//			if (d > 0) {
-//				ne /= d;
-//				se /= d;
-//				i->current.ne += ne;
-//				i->current.se += se;
-//			}
-//		}
-//	}
-
 	i->frame += inc_rate * 10.0f;
 
 	if (complete) {

@@ -83,7 +83,6 @@ void View::scrollTo(Tile *t) {
 void View::click(ScreenCoord sc, ScreenCoord down, int button) {
 	// calculate isometric coord
 
-	cout << button << endl;
 	IsoCoord ic = toIso(sc);
 	Tile *clicked_tile = state->getTile(ic.ne, ic.se);
 

@@ -11,10 +11,10 @@ set(GLFW_VERSION_FULL "${GLFW_VERSION}.${GLFW_VERSION_PATCH}${GLFW_VERSION_EXTRA
 set(LIB_SUFFIX "" CACHE STRING "Takes an empty string or 64. Directory where lib will be installed: lib or lib64")
 
 option(BUILD_SHARED_LIBS "Build shared libraries" OFF)
-option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" ON)
-option(GLFW_BUILD_TESTS "Build the GLFW test programs" ON)
-option(GLFW_BUILD_DOCS "Build the GLFW documentation" ON)
-option(GLFW_INSTALL "Generate installation target" ON)
+option(GLFW_BUILD_EXAMPLES "Build the GLFW example programs" OFF)
+option(GLFW_BUILD_TESTS "Build the GLFW test programs" OFF)
+option(GLFW_BUILD_DOCS "Build the GLFW documentation" OFF)
+option(GLFW_INSTALL "Generate installation target" OFF)
 option(GLFW_DOCUMENT_INTERNALS "Include internals in documentation" OFF)
 
 if (WIN32)
@@ -120,7 +120,7 @@ endif()
 #--------------------------------------------------------------------
 if (WIN32)
     set(_GLFW_WIN32 1)
-    message(STATUS "Using Win32 for window creation") 
+    message(STATUS "Using Win32 for window creation")
 
     if (GLFW_USE_EGL)
         set(_GLFW_EGL 1)
@@ -136,7 +136,7 @@ elseif (APPLE)
     message(STATUS "Using NSGL for context creation")
 elseif (UNIX)
     set(_GLFW_X11 1)
-    message(STATUS "Using X11 for window creation") 
+    message(STATUS "Using X11 for window creation")
 
     if (GLFW_USE_EGL)
         set(_GLFW_EGL 1)
@@ -241,7 +241,7 @@ if (_GLFW_X11)
     # Check for Xkb (X keyboard extension)
     if (NOT X11_Xkb_FOUND)
         message(FATAL_ERROR "The X keyboard extension headers were not found")
-    endif() 
+    endif()
 
     list(APPEND glfw_INCLUDE_DIR ${X11_Xkb_INCLUDE_PATH})
 
@@ -331,7 +331,7 @@ endif()
 # Use Cocoa for window creation and NSOpenGL for context creation
 #--------------------------------------------------------------------
 if (_GLFW_COCOA AND _GLFW_NSGL)
-        
+
     if (GLFW_USE_MENUBAR)
         set(_GLFW_USE_MENUBAR 1)
     endif()
@@ -346,7 +346,7 @@ if (_GLFW_COCOA AND _GLFW_NSGL)
     else()
         message(STATUS "Building GLFW only for the native architecture")
     endif()
-    
+
     # Set up library and include paths
     find_library(COCOA_FRAMEWORK Cocoa)
     find_library(IOKIT_FRAMEWORK IOKit)
@@ -383,7 +383,7 @@ endif()
 configure_file(${GLFW_SOURCE_DIR}/docs/Doxyfile.in
                ${GLFW_BINARY_DIR}/docs/Doxyfile @ONLY)
 
-configure_file(${GLFW_SOURCE_DIR}/src/glfw_config.h.in 
+configure_file(${GLFW_SOURCE_DIR}/src/glfw_config.h.in
                ${GLFW_BINARY_DIR}/src/glfw_config.h @ONLY)
 
 configure_file(${GLFW_SOURCE_DIR}/src/glfwConfig.cmake.in
@@ -419,7 +419,7 @@ endif()
 # The library is installed by src/CMakeLists.txt
 #--------------------------------------------------------------------
 if (GLFW_INSTALL)
-    install(DIRECTORY include/GLFW DESTINATION include 
+    install(DIRECTORY include/GLFW DESTINATION include
             FILES_MATCHING PATTERN glfw3.h PATTERN glfw3native.h)
 
     install(FILES ${GLFW_BINARY_DIR}/src/glfwConfig.cmake

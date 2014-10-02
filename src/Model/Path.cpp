@@ -63,7 +63,6 @@ void Path::search(Tile *start, IsoCoord *t) {
 
 		// set final path
 		if ( current.tile->contains( *t ) ) {
-			cout << "found path" << endl;
 			vector<Tile *> stack;
 			Tile *tile_from = current.tile;
 
